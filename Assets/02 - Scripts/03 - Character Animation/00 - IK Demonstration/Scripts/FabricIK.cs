@@ -5,6 +5,7 @@ using UnityEditor;
 
 public class FabricIK : MonoBehaviour
 {
+    // Test test test
     [Header("Chain Settings")]
     public int chainLength = 3; // Number of spaces between the bone positions.
 
