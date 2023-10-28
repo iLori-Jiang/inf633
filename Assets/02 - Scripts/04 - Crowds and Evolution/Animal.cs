@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Animal : MonoBehaviour
 {
-
+    // below config not working
     [Header("Animal parameters")]
     public float swapRate = 0.01f;
     public float mutateRate = 0.01f;
@@ -44,6 +44,12 @@ public class Animal : MonoBehaviour
     // Renderer.
     private Material mat = null;
 
+    // capsule controller
+    private CapsuleAutoController capsule_controller;
+
+    // type for animal or predator
+    public bool if_animal;
+
     void Start()
     {
         // Network: 1 input per receptor, 1 output per actuator.
@@ -57,6 +63,10 @@ public class Animal : MonoBehaviour
         MeshRenderer renderer = GetComponentInChildren<MeshRenderer>();
         if (renderer != null)
             mat = renderer.material;
+
+        // get the controller and set the speed
+        //capsule_controller = GetComponent<CapsuleAutoController>();
+        //capsule_controller.max_speed = 0.1f;
     }
 
     void Update()

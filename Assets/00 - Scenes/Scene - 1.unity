@@ -572,12 +572,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!1 &223894165 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6733265589692463594, guid: b8a4860b06bc8b44fa2e523916edd3dd,
-    type: 3}
-  m_PrefabInstance: {fileID: 6733265589871223679}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &223894168 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6733265589692463591, guid: b8a4860b06bc8b44fa2e523916edd3dd,
@@ -815,13 +809,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 374040426}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58addec6626ef40dfb932e8efbbb6236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popSize: 100
-  animalPrefab: {fileID: 223894165}
+  animal_popSize: 100
+  animalPrefab: {fileID: 822039958}
+  predator_popSize: 20
+  predatorPrefab: {fileID: 2136941669}
   vegetationGrowthRate: 1
   currentGrowth: 0
 --- !u!1 &534669902
@@ -1181,6 +1177,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &822039958 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8107060311548940698, guid: 292e0cc1c13240549bc0ea73726cca30,
+    type: 3}
+  m_PrefabInstance: {fileID: 8246070314906294668}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &854695596
 GameObject:
   m_ObjectHideFlags: 0
@@ -2062,6 +2064,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2136941669 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3404752603996515038, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+    type: 3}
+  m_PrefabInstance: {fileID: 3404752603093824092}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2136941674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136941669}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1f469cac40517759e7c8ac324ba401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  max_speed: 0.2
 --- !u!1 &2137751596
 GameObject:
   m_ObjectHideFlags: 3
@@ -2146,6 +2167,43 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8246070314906294668}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &211103094831797368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822039958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0cc07004fd40a196e4058316a4276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swapRate: 0.01
+  mutateRate: 0.01
+  swapStrength: 10
+  mutateStrength: 0.5
+  maxAngle: 10
+  maxEnergy: 10
+  lossEnergy: 0.1
+  gainEnergy: 10
+  maxVision: 20
+  stepAngle: 10
+  nEyes: 5
+  if_animal: 0
+--- !u!114 &211103094831797369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822039958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1f469cac40517759e7c8ac324ba401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  max_speed: 0.1
 --- !u!1001 &3404752603093824092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2153,6 +2211,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1965446001}
     m_Modifications:
+    - target: {fileID: 3404752603996515028, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3404752603996515034, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
         type: 3}
       propertyPath: m_RootOrder
@@ -2276,6 +2339,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6733265589692463592, guid: b8a4860b06bc8b44fa2e523916edd3dd,
+        type: 3}
+      propertyPath: maxEnergy
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6733265589692463594, guid: b8a4860b06bc8b44fa2e523916edd3dd,
         type: 3}

@@ -8,14 +8,17 @@ public class GeneticAlgo : MonoBehaviour
 {
 
     [Header("Genetic Algorithm parameters")]
-    public int popSize = 100;
+    public int animal_popSize = 100;
     public GameObject animalPrefab;
+    public int predator_popSize = 20;
+    public GameObject predatorPrefab;   // predator
 
     [Header("Dynamic elements")]
     public float vegetationGrowthRate = 1.0f;
     public float currentGrowth;
 
     private List<GameObject> animals;
+    private List<GameObject> predators;
     protected Terrain terrain;
     protected CustomTerrain customTerrain;
     protected float width;
@@ -23,6 +26,9 @@ public class GeneticAlgo : MonoBehaviour
 
     void Start()
     {
+        // limit the FPS
+        Time.captureFramerate = 25;
+
         // Retrieve terrain.
         terrain = Terrain.activeTerrain;
         customTerrain = GetComponent<CustomTerrain>();
@@ -34,21 +40,34 @@ public class GeneticAlgo : MonoBehaviour
 
         // Initialize animals array.
         animals = new List<GameObject>();
-        for (int i = 0; i < popSize; i++)
+        for (int i = 0; i < animal_popSize; i++)
         {
             GameObject animal = makeAnimal();
             animals.Add(animal);
+        }
+
+        predators = new List<GameObject>();
+        for (int i = 0; i < predator_popSize; i++)
+        {
+            GameObject predator = makePredator();
+            predators.Add(predator);
         }
     }
 
     void Update()
     {
         // Keeps animal to a minimum.
-        while (animals.Count < popSize / 2)
+        while (animals.Count < animal_popSize / 2)
         {
             animals.Add(makeAnimal());
         }
-        customTerrain.debug.text = "N° animals: " + animals.Count.ToString();
+        customTerrain.debug.text = "#N animals: " + animals.Count.ToString();
+
+        while (predators.Count < predator_popSize / 2)
+        {
+            predators.Add(makePredator());
+        }
+        customTerrain.debug.text += "\n#N predators: " + predators.Count.ToString();
 
         // Update grass elements/food resources.
         updateResources();
@@ -80,9 +99,12 @@ public class GeneticAlgo : MonoBehaviour
     public GameObject makeAnimal(Vector3 position)
     {
         GameObject animal = Instantiate(animalPrefab, transform);
-        animal.GetComponent<Animal>().Setup(customTerrain, this);
+        var ani = animal.GetComponent<Animal>();
+        ani.Setup(customTerrain, this);
+        ani.if_animal = true;
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
+        
         return animal;
     }
 
@@ -99,6 +121,27 @@ public class GeneticAlgo : MonoBehaviour
         return makeAnimal(new Vector3(x, y, z));
     }
 
+    public GameObject makePredator(Vector3 position)
+    {
+        GameObject predator = Instantiate(predatorPrefab, transform);
+        var ani = predator.GetComponent<Animal>();
+        ani.Setup(customTerrain, this);
+        ani.if_animal = false;
+        predator.transform.position = position;
+        predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
+
+        return predator;
+    }
+
+    public GameObject makePredator()
+    {
+        Vector3 scale = terrain.terrainData.heightmapScale;
+        float x = UnityEngine.Random.value * width;
+        float z = UnityEngine.Random.value * height;
+        float y = customTerrain.getInterp(x / scale.x, z / scale.z);
+        return makePredator(new Vector3(x, y, z));
+    }
+
     /// <summary>
     /// Method to add an animal inherited from anothed. It spawns where the parent was.
     /// </summary>
@@ -106,8 +149,18 @@ public class GeneticAlgo : MonoBehaviour
     public void addOffspring(Animal parent)
     {
         GameObject animal = makeAnimal(parent.transform.position);
-        animal.GetComponent<Animal>().InheritBrain(parent.GetBrain(), true);
-        animals.Add(animal);
+        var ani = animal.GetComponent<Animal>();
+        ani.InheritBrain(parent.GetBrain(), true);
+        ani.if_animal = parent.if_animal;
+        if (ani.if_animal == true)
+        {
+            animals.Add(animal);
+        }
+        else
+        {
+            predators.Add(animal);
+        }
+        
     }
 
     /// <summary>
@@ -116,7 +169,15 @@ public class GeneticAlgo : MonoBehaviour
     /// <param name="animal"></param>
     public void removeAnimal(Animal animal)
     {
-        animals.Remove(animal.transform.gameObject);
+        if (animal.if_animal == true)
+        {
+            animals.Remove(animal.transform.gameObject);
+        }
+        else
+        {
+            predators.Remove(animal.transform.gameObject);
+        }
+        
         Destroy(animal.transform.gameObject);
     }
 
