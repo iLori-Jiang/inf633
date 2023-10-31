@@ -102,15 +102,17 @@ public class FootStepper : MonoBehaviour
          */
 
         // START TODO ###################
+        Vector3 raycastOrigin = homeTransform.position + overshootVector;
+        Vector3 down = transform.TransformDirection(Vector3.down);
 
-        // Vector3 raycastOrigin = ...
-
-        // if (Physics.Raycast(...))
-        // {
-        //  ...
-        //  return true;
-        // }
-
+        RaycastHit hit;
+        if (Physics.Raycast(raycastOrigin, down, out hit))
+        {
+            endPos = hit.point;
+            endNormal = hit.normal;
+    
+            return true;
+        }
         // END TODO ###################
 
         endPos = Vector3.zero;
@@ -163,6 +165,8 @@ public class FootStepper : MonoBehaviour
 
             // START TODO ###################
 
+            //Point P1 = 
+            transform.position = Vector3.Lerp(startPos, endPos, normalizedTime);
             // transform.position = ...
 
             // END TODO ###################
@@ -173,7 +177,7 @@ public class FootStepper : MonoBehaviour
 
             // START TODO ###################
 
-            // transform.rotation = ...
+            transform.rotation = endRot;
 
             // END TODO ###################
 
