@@ -2070,19 +2070,19 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3404752603093824092}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2136941674
+--- !u!114 &2136941679
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2136941669}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc1f469cac40517759e7c8ac324ba401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_speed: 0.2
+  max_speed: 0.5
 --- !u!1 &2137751596
 GameObject:
   m_ObjectHideFlags: 3
@@ -2184,13 +2184,15 @@ MonoBehaviour:
   swapStrength: 10
   mutateStrength: 0.5
   maxAngle: 10
-  maxEnergy: 10
+  maxSpeed: 0.5
+  maxEnergy: 100
   lossEnergy: 0.1
   gainEnergy: 10
   maxVision: 20
   stepAngle: 10
   nEyes: 5
-  if_animal: 0
+  maxSize: 5
+  if_animal: 1
 --- !u!114 &211103094831797369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2214,7 +2216,7 @@ PrefabInstance:
     - target: {fileID: 3404752603996515028, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3404752603996515034, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
         type: 3}
@@ -2275,6 +2277,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Human - (Autonomous)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+        type: 3}
+      propertyPath: maxSpeed
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+        type: 3}
+      propertyPath: if_animal
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+        type: 3}
+      propertyPath: maxEnergy
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784, type: 3}
@@ -2342,8 +2359,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6733265589692463592, guid: b8a4860b06bc8b44fa2e523916edd3dd,
         type: 3}
+      propertyPath: if_animal
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6733265589692463592, guid: b8a4860b06bc8b44fa2e523916edd3dd,
+        type: 3}
       propertyPath: maxEnergy
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6733265589692463594, guid: b8a4860b06bc8b44fa2e523916edd3dd,
         type: 3}

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class HumanoidAutoController : MonoBehaviour {
 
+    public float max_speed = 0.5f;
     private Animator anim;
 
     void Start() {

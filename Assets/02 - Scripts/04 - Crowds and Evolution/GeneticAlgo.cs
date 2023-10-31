@@ -10,7 +10,7 @@ public class GeneticAlgo : MonoBehaviour
     [Header("Genetic Algorithm parameters")]
     public int animal_popSize = 100;
     public GameObject animalPrefab;
-    public int predator_popSize = 20;
+    public int predator_popSize = 10;
     public GameObject predatorPrefab;   // predator
 
     [Header("Dynamic elements")]
@@ -27,7 +27,7 @@ public class GeneticAlgo : MonoBehaviour
     void Start()
     {
         // limit the FPS
-        Time.captureFramerate = 25;
+        Time.captureFramerate = 10;
 
         // Retrieve terrain.
         terrain = Terrain.activeTerrain;
@@ -61,13 +61,13 @@ public class GeneticAlgo : MonoBehaviour
         {
             animals.Add(makeAnimal());
         }
-        customTerrain.debug.text = "#N animals: " + animals.Count.ToString();
+        customTerrain.debug.text = "#N herbivore: " + animals.Count.ToString();
 
         while (predators.Count < predator_popSize / 2)
         {
             predators.Add(makePredator());
         }
-        customTerrain.debug.text += "\n#N predators: " + predators.Count.ToString();
+        customTerrain.debug.text += "\n#N carnivore: " + predators.Count.ToString();
 
         // Update grass elements/food resources.
         updateResources();
@@ -100,8 +100,8 @@ public class GeneticAlgo : MonoBehaviour
     {
         GameObject animal = Instantiate(animalPrefab, transform);
         var ani = animal.GetComponent<Animal>();
-        ani.Setup(customTerrain, this);
         ani.if_animal = true;
+        ani.Setup(customTerrain, this);
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
         
@@ -125,8 +125,8 @@ public class GeneticAlgo : MonoBehaviour
     {
         GameObject predator = Instantiate(predatorPrefab, transform);
         var ani = predator.GetComponent<Animal>();
-        ani.Setup(customTerrain, this);
         ani.if_animal = false;
+        ani.Setup(customTerrain, this);
         predator.transform.position = position;
         predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
 
@@ -150,7 +150,7 @@ public class GeneticAlgo : MonoBehaviour
     {
         GameObject animal = makeAnimal(parent.transform.position);
         var ani = animal.GetComponent<Animal>();
-        ani.InheritBrain(parent.GetBrain(), true);
+        // ani.InheritBrain(parent.GetBrain(), true);
         ani.if_animal = parent.if_animal;
         if (ani.if_animal == true)
         {
@@ -160,6 +160,8 @@ public class GeneticAlgo : MonoBehaviour
         {
             predators.Add(animal);
         }
+
+        ani.Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed());
         
     }
 
@@ -179,6 +181,11 @@ public class GeneticAlgo : MonoBehaviour
         }
         
         Destroy(animal.transform.gameObject);
+    }
+
+    public List<GameObject> getAnimals()
+    {
+        return animals;
     }
 
 }
