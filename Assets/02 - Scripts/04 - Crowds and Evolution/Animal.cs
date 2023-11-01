@@ -27,6 +27,9 @@ public class Animal : MonoBehaviour
     private double reproduceProb = 0.5;
     private int reproduceTime = 10;
     private int reproduceCounter;
+    private int matureTime = 10;
+    private int matureCounter;
+    private bool ifMature;
 
     [Header("Sensor - Vision")]
     public float maxVision = 20.0f;
@@ -80,34 +83,38 @@ public class Animal : MonoBehaviour
     void Start()
     {
         // Initialization
-        mutateRate = 0.5f;
+        mutateRate = 0.2f;
         maxSpeed = 0.5f;
         maxEnergy = 180.0f;
         lossEnergy = 0.5f;
         gainEnergy = 20f;
-        maxVision = 10.0f;
+        maxVision = 40.0f;
         maxSize = 5.0f;
         hunger = 0.7f;
         eatingRange = 0.3f;
 
-        reproduceProb = 0.01;
-        reproduceTime = 50;
+        reproduceProb = 0.2;
+        reproduceTime = 30;
+        matureTime = 100;
 
         reproduceCounter = 0;
+        matureCounter = 0;
+        ifMature = false;
 
+        random = new System.Random();
 
         // Network: 1 input per receptor, 1 output per actuator.
         // vision = new float[nEyes];
         // networkStruct = new int[] { nEyes, 5, 1 };
-        energy_MAX = maxEnergy;
-        energy = energy_MAX;
         tfm = transform;
-        visionRange = maxVision;
-        size = maxSize;
-        speed = maxSpeed;
 
-        random = new System.Random();
+        energy_MAX = maxEnergy * (float)(1 + mutateRate * Uniform());
+        energy = energy_MAX;
+        visionRange = maxVision * (float)(1 + mutateRate * Uniform());
+        size = maxSize * (float)(1 + mutateRate * Uniform());
+        speed = maxSpeed * (float)(1 + mutateRate * Uniform());
 
+        
         // Renderer used to update animal color.
         // It needs to be updated for more complex models.
         MeshRenderer renderer = GetComponentInChildren<MeshRenderer>();
@@ -450,6 +457,7 @@ public class Animal : MonoBehaviour
     {
         energy_MAX = input;
         energy = energy_MAX;
+        // Debug.Log("energy_max: " + input + " | " + energy_MAX);
     }
 
     public float GetVisionRange()
@@ -460,6 +468,7 @@ public class Animal : MonoBehaviour
     public void SetVisionRange(float input)
     {
         visionRange = input;
+        // Debug.Log("vision: " + input + " | " + visionRange);
     }
 
     public float GetSize()
@@ -482,6 +491,7 @@ public class Animal : MonoBehaviour
         speed = input;
         CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
         capsule_controller.max_speed = speed;
+        // Debug.Log("speed: " + input + " | " + speed);
     }
 
     public Transform GetTransform()
@@ -507,6 +517,7 @@ public class Animal : MonoBehaviour
     public void SetReproduceProba(double input)
     {
         reproduceProb = input;
+        // Debug.Log("reproduce prob: " + input + " | " + reproduceProb);
     }
 
     private bool IfHungry()
@@ -528,6 +539,16 @@ public class Animal : MonoBehaviour
 
     private void Reproduce(double probability)
     {
+        if (!ifMature)
+        {
+            matureCounter += 1;
+            if (matureCounter > matureTime)
+            {
+                ifMature = true;
+            }
+            return;
+        }
+
         if (reproduceCounter == 0)
         {
             double randomValue = random.NextDouble();

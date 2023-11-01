@@ -49,7 +49,7 @@ public class GeneticAlgo : MonoBehaviour
         // Initialization
         animal_popSize = 250;
         predator_popSize = 80;
-        vegetationGrowthRate = 0.2f;
+        vegetationGrowthRate = 1.0f;
 
         random = new System.Random();
 
@@ -269,9 +269,9 @@ public class GeneticAlgo : MonoBehaviour
         animalNum.Add(animals.Count);
         predatorNum.Add(predators.Count);
 
-        float energy_animal_sum = 0f;
-        float vision_animal_sum = 0f;
-        float speed_animal_sum = 0f;
+        float energy_animal_sum = 0.0f;
+        float vision_animal_sum = 0.0f;
+        float speed_animal_sum = 0.0f;
         double reproduce_pro_animal_sum = 0.0;
 
         for (int i=0; i<animals.Count; i++)
@@ -281,6 +281,9 @@ public class GeneticAlgo : MonoBehaviour
             vision_animal_sum += animal.GetVisionRange();
             speed_animal_sum += animal.GetSpeed();
             reproduce_pro_animal_sum += animal.GetReproduceProba();
+
+            //Debug.Log("     Energy: " + animal.GetEnergyMAX());
+            //Debug.Log("     Vision: " + animal.GetVisionRange());
         }
 
         energyAnimal.Add(energy_animal_sum / animals.Count);
@@ -288,10 +291,13 @@ public class GeneticAlgo : MonoBehaviour
         speedAnimal.Add(speed_animal_sum / animals.Count);
         reproduceProbAnimal.Add(reproduce_pro_animal_sum / animals.Count);
 
-        float energy_predator_sum = 0f;
-        float vision_predator_sum = 0f;
-        float speed_predator_sum = 0f;
-        double reproduce_pro_predator_sum = 0f;
+        //Debug.Log("Energy Max: " + energy_animal_sum / animals.Count);
+        //Debug.Log("Vision: " + vision_animal_sum / animals.Count);
+
+        float energy_predator_sum = 0.0f;
+        float vision_predator_sum = 0.0f;
+        float speed_predator_sum = 0.0f;
+        double reproduce_pro_predator_sum = 0.0;
 
         for (int i=0; i<predators.Count; i++)
         {
