@@ -9,7 +9,7 @@ public class Animal : MonoBehaviour
     // below config not working
     [Header("Animal parameters")]
     public float swapRate = 0.01f;
-    public float mutateRate = 0.1f;
+    public float mutateRate = 0.4f;
     public float swapStrength = 10.0f;
     public float mutateStrength = 0.5f;
     public float maxAngle = 10.0f;
@@ -21,6 +21,7 @@ public class Animal : MonoBehaviour
     public float lossEnergy = 0.1f;
     public float gainEnergy = 10.0f;
     public float hunger = 0.8f;
+    private double reproduceProb = 0.1;
     private float energy_MAX;
     private float energy;
 
@@ -36,7 +37,8 @@ public class Animal : MonoBehaviour
 
     [Header("Predator parameters")]
     // type for animal or predator
-    public bool if_animal;
+    public float eatingRange = 0.4f;
+    private bool if_animal;
 
     // private int[] networkStruct;
     // private SimpleNeuralNet brain = null;
@@ -59,23 +61,23 @@ public class Animal : MonoBehaviour
     // Renderer.
     private Material mat = null;
 
-    // display info
-    private float displayDuration = 2.0f; // Duration in seconds to display the text.
-    private int fontSize = 200;
+    //// display info
+    //private float displayDuration = 2.0f; // Duration in seconds to display the text.
+    //private int fontSize = 200;
 
-    private string displayText = "I'm eating!";
-    private float eatDisplayStartTime;
-    private bool isEatDisplaying;
-    private Text eatLabel;
+    //private string displayText = "I'm eating!";
+    //private float eatDisplayStartTime;
+    //private bool isEatDisplaying;
+    //private Text eatLabel;
 
-    // motion controller
-    private CapsuleAutoController capsule_controller;
-    private HumanoidAutoController human_controller;
+    //// motion controller
+    //private CapsuleAutoController capsule_controller;
+    //private HumanoidAutoController human_controller;
 
     void Start()
     {
         // Initialization
-        mutateRate = 0.1f;
+        mutateRate = 0.4f;
         maxSpeed = 0.5f;
         maxEnergy = 100.0f;
         lossEnergy = 0.5f;
@@ -83,6 +85,8 @@ public class Animal : MonoBehaviour
         maxVision = 10.0f;
         maxSize = 5.0f;
         hunger = 0.7f;
+        eatingRange = 0.3f;
+        reproduceProb = 0.01;
 
 
         // Network: 1 input per receptor, 1 output per actuator.
@@ -125,18 +129,15 @@ public class Animal : MonoBehaviour
         energy -= lossEnergy;
 
         // If the position can eat something
-        if (energy / energy_MAX <= hunger)
+        if (IfHungry())
         {
             if (if_animal)
-            {
-
                 EatGrass();
-            }
             else
-            {
                 EatMeat();
-            }
         }
+        else
+            Reproduce(reproduceProb);
 
         // If the energy is below 0, the animal dies.
         if (energy < 0)
@@ -159,7 +160,12 @@ public class Animal : MonoBehaviour
         //float angle = (output[0] * 2.0f - 1.0f) * maxAngle;
         //tfm.Rotate(0.0f, angle, 0.0f);
 
-        float[] target = UpdateVisionGrass();
+        float[] target;
+        if (if_animal)
+            target = UpdateVisionGrass();
+        else
+            target = UpdateVisionMeat();
+        
         Vector3 targetPosition = new Vector3(target[0], tfm.position.y, target[1]);
         tfm.LookAt(targetPosition);
 
@@ -172,6 +178,9 @@ public class Animal : MonoBehaviour
         Vector2 ratio = detailSize / terrainSize;
         float x = tfm.position.x;
         float y = tfm.position.z;
+
+        if (!IfHungry())
+            return RandomWalk(x, y);
 
         float cloest_x = 0;
         float cloest_y = 0;
@@ -217,14 +226,13 @@ public class Animal : MonoBehaviour
 
         // if nothing found
         if (!if_found)
+            return RandomWalk(x, y);
+        else
         {
-            cloest_x = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-            cloest_y = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+            // return the cloest result
+            float[] result = new float[] { cloest_x, cloest_y };
+            return result;
         }
-
-        // return the cloest result
-        float[] result = new float[] {cloest_x, cloest_y};
-        return result;
     }
 
     // Eat grass
@@ -242,8 +250,6 @@ public class Animal : MonoBehaviour
             energy += gainEnergy;
             if (energy > maxEnergy)
                 energy = maxEnergy;
-
-            genetic_algo.addOffspring(this);
 
             // display info
             //Vector3 objectPosition = Camera.main.WorldToScreenPoint(tfm.position);
@@ -275,6 +281,10 @@ public class Animal : MonoBehaviour
         // location of the predator
         float x = tfm.position.x;
         float y = tfm.position.z;
+        Vector2 predator_pos = new(x, y);
+
+        if (!IfHungry())
+            return RandomWalk(x, y);
 
         List<GameObject> animals = genetic_algo.getAnimals();
 
@@ -285,62 +295,65 @@ public class Animal : MonoBehaviour
         bool if_found = false;
 
         // transerverse its surrounding vision range
-        // TODO: rewrite, reduce the query time for animal
-        for (float i = -visionRange; i <= visionRange; i += 0.5f)
+        for (int i=0; i<animals.Count; i++)
         {
-            float x_temp = (x + i);
+            float x_ani = animals[i].GetComponent<Animal>().GetTransform().position.x;
+            float y_ani = animals[i].GetComponent<Animal>().GetTransform().position.z;
+            Vector2 ani_pos = new(x_ani, y_ani);
 
-            if (x_temp < 0 || x_temp >= terrainSize.x)
+            float distance = Vector2.Distance(predator_pos, ani_pos);
+
+            if (distance < cloest_distance)
             {
-                continue;
-            }
-
-            for (float j = -visionRange; j <= visionRange; j += 0.5f)
-            {
-                float y_temp = (y + j);
-
-                if (y_temp < 0 || y_temp >= terrainSize.y)
-                {
-                    continue;
-                }
-
-                // if exist meat
-                for (int index = 0; index <animals.Count; index++)
-                {
-                    float animal_x;
-                }
-                if ((int)x_temp >= 0 && (int)x_temp < details.GetLength(1) && (int)y_temp >= 0 && (int)y_temp < details.GetLength(0) && details[(int)y_temp, (int)x_temp] > 0)
-                {
-                    Vector2 meat_pos = new(i, j);
-                    float distance = meat_pos.magnitude;
-
-                    if (distance < cloest_distance)
-                    {
-                        cloest_distance = distance;
-                        cloest_x = x + i;
-                        cloest_y = y + j;
-                        if_found = true;
-                    }
-                }
+                cloest_distance = distance;
+                cloest_x = x_ani;
+                cloest_y = y_ani;
+                if_found = true;
             }
         }
 
         // if nothing found
         if (!if_found)
+            return RandomWalk(x, y);
+        else
         {
-            cloest_x = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-            cloest_y = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+            // return the cloest result
+            float[] result = new float[] { cloest_x, cloest_y };
+            return result;
         }
-
-        // return the cloest result
-        float[] result = new float[] { cloest_x, cloest_y };
-        return result;
     }
 
     // Eat meat
     private void EatMeat()
     {
+        // Retrieve animal location
+        float x = tfm.position.x;
+        float y = tfm.position.z;
+        Vector2 predator_pos = new(x, y);
 
+        List<GameObject> animals = genetic_algo.getAnimals();
+
+        for (int i=0; i<animals.Count; i++)
+        {
+            float x_ani = animals[i].GetComponent<Animal>().GetTransform().position.x;
+            float y_ani = animals[i].GetComponent<Animal>().GetTransform().position.z;
+            Vector2 ani_pos = new(x_ani, y_ani);
+
+            float distance = Vector2.Distance(predator_pos, ani_pos);
+
+            if (distance <= eatingRange)
+            {
+                // kill the animal
+                genetic_algo.removeAnimal(animals[i].GetComponent<Animal>());
+
+                // gain the energy
+                energy += gainEnergy;
+                if (energy > maxEnergy)
+                    energy = maxEnergy;
+
+                terrain.debug.text += "\n\nEating Meat!!!";
+            }
+        }
     }
 
     /// <summary>
@@ -411,7 +424,7 @@ public class Animal : MonoBehaviour
     //}
     public float GetHealth()
     {
-        return energy / maxEnergy;
+        return energy / energy_MAX;
     }
 
     public float GetEnergyMAX()
@@ -439,6 +452,52 @@ public class Animal : MonoBehaviour
         return tfm;
     }
 
+    public void SetAnimalType(bool type)
+    {
+        if_animal = type;
+    }
+
+    public bool GetAnimalType()
+    {
+        return if_animal;
+    }
+
+    public double GetReproduceProba()
+    {
+        return reproduceProb;
+    }
+
+    private bool IfHungry()
+    {
+        if (energy / energy_MAX <= hunger)
+            return true;
+        else
+            return false;
+    }
+
+    private static float[] RandomWalk(float x, float y)
+    {
+        float x_direction = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+        float y_direction = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+
+        float[] result = new float[] { x + x_direction, y + y_direction };
+        return result;
+    }
+
+    private void Reproduce(double probability)
+    {
+        double randomValue = random.NextDouble();
+
+        if (randomValue <= probability)
+        {
+            genetic_algo.addOffspring(this);
+
+            if (if_animal)
+                terrain.debug.text += "\n\nReproducing herbivore!!!";
+            else
+                terrain.debug.text += "\n\nReproducing carnivore!!!";
+        }
+    }
 
     private static double Gaussian(double mean, double std)
     {
@@ -448,11 +507,12 @@ public class Animal : MonoBehaviour
         return mean + std * standardNormal;
     }
 
-    public void Mutate(float energy_parent, float vision_parent, float size_parent, float speed_parent)
+    public void Mutate(float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
     {
         energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate);
         energy = energy_MAX;
 
+        reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
         visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
         size = (float)Gaussian(size_parent, size_parent * mutateRate);
         speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
