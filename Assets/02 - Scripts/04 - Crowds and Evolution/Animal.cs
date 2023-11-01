@@ -21,9 +21,12 @@ public class Animal : MonoBehaviour
     public float lossEnergy = 0.1f;
     public float gainEnergy = 10.0f;
     public float hunger = 0.8f;
-    private double reproduceProb = 0.1;
     private float energy_MAX;
     private float energy;
+
+    private double reproduceProb = 0.5;
+    private int reproduceTime = 10;
+    private int reproduceCounter;
 
     [Header("Sensor - Vision")]
     public float maxVision = 20.0f;
@@ -77,16 +80,20 @@ public class Animal : MonoBehaviour
     void Start()
     {
         // Initialization
-        mutateRate = 0.4f;
+        mutateRate = 0.5f;
         maxSpeed = 0.5f;
-        maxEnergy = 100.0f;
+        maxEnergy = 180.0f;
         lossEnergy = 0.5f;
         gainEnergy = 20f;
         maxVision = 10.0f;
         maxSize = 5.0f;
         hunger = 0.7f;
         eatingRange = 0.3f;
+
         reproduceProb = 0.01;
+        reproduceTime = 50;
+
+        reproduceCounter = 0;
 
 
         // Network: 1 input per receptor, 1 output per actuator.
@@ -486,17 +493,29 @@ public class Animal : MonoBehaviour
 
     private void Reproduce(double probability)
     {
-        double randomValue = random.NextDouble();
-
-        if (randomValue <= probability)
+        if (reproduceCounter == 0)
         {
-            genetic_algo.addOffspring(this);
+            double randomValue = random.NextDouble();
 
-            if (if_animal)
-                terrain.debug.text += "\n\nReproducing herbivore!!!";
-            else
-                terrain.debug.text += "\n\nReproducing carnivore!!!";
+            if (randomValue <= probability)
+            {
+                genetic_algo.addOffspring(this);
+
+                reproduceCounter += 1;
+
+                if (if_animal)
+                    terrain.debug.text += "\n\nReproducing herbivore!!!";
+                else
+                    terrain.debug.text += "\n\nReproducing carnivore!!!";
+            }
         }
+        else
+        {
+            reproduceCounter += 1;
+            if (reproduceCounter > reproduceTime)
+                reproduceCounter = 0;
+        }
+        
     }
 
     private static double Gaussian(double mean, double std)
@@ -507,15 +526,28 @@ public class Animal : MonoBehaviour
         return mean + std * standardNormal;
     }
 
+    private double Uniform()
+    {
+        return (random.NextDouble() * 2) - 1;   // [-1, 1]
+    }
+
     public void Mutate(float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
     {
-        energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate);
+        //energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate);
+        //energy = energy_MAX;
+
+        //reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
+        //visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
+        //size = (float)Gaussian(size_parent, size_parent * mutateRate);
+        //speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
+
+        energy_MAX = energy_parent * (float)(1 + mutateRate * Uniform());
         energy = energy_MAX;
 
-        reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
-        visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
-        size = (float)Gaussian(size_parent, size_parent * mutateRate);
-        speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
+        reproduceProb = reproduce_prob_parent * (float)(1 + mutateRate * Uniform());
+        visionRange = vision_parent * (float)(1 + mutateRate * Uniform());
+        size = size_parent * (float)(1 + mutateRate * Uniform());
+        speed = speed_parent * (float)(1 + mutateRate * Uniform());
 
         // size
         // tfm.localScale = new Vector3(size, size, size);

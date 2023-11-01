@@ -15,7 +15,7 @@ public class GeneticAlgo : MonoBehaviour
     public GameObject predatorPrefab;   // predator
 
     [Header("Dynamic elements")]
-    public float vegetationGrowthRate = 1.0f;
+    public float vegetationGrowthRate = 0.1f;
     public float currentGrowth;
 
     private List<GameObject> animals;
@@ -27,7 +27,7 @@ public class GeneticAlgo : MonoBehaviour
 
     // Record
     private int frame = 0;
-    private int recordFreq = 10;
+    private int recordFreq = 6;
     private List<int> animalNum;
     private List<int> predatorNum;
     private List<float> energyAnimal;
@@ -47,7 +47,7 @@ public class GeneticAlgo : MonoBehaviour
         // Initialization
         animal_popSize = 250;
         predator_popSize = 80;
-        vegetationGrowthRate = 1.0f;
+        vegetationGrowthRate = 0.2f;
 
         // Init record
         frame = 0;
@@ -92,13 +92,13 @@ public class GeneticAlgo : MonoBehaviour
         frame += 1;
 
         // Keeps animal to a minimum.
-        while (animals.Count < animal_popSize / 2)
+        while (animals.Count < animal_popSize / 4)
         {
             animals.Add(makeAnimal());
         }
         customTerrain.debug.text = "#N herbivore: " + animals.Count.ToString();
 
-        while (predators.Count < predator_popSize / 2)
+        while (predators.Count < predator_popSize / 4)
         {
             predators.Add(makePredator());
         }
