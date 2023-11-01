@@ -46,7 +46,7 @@ public class Animal : MonoBehaviour
     // private int[] networkStruct;
     // private SimpleNeuralNet brain = null;
 
-    private static System.Random random = new System.Random();
+    private static System.Random random;
 
     // Terrain.
     private CustomTerrain terrain = null;
@@ -105,6 +105,8 @@ public class Animal : MonoBehaviour
         visionRange = maxVision;
         size = maxSize;
         speed = maxSpeed;
+
+        random = new System.Random();
 
         // Renderer used to update animal color.
         // It needs to be updated for more complex models.
@@ -434,9 +436,20 @@ public class Animal : MonoBehaviour
         return energy / energy_MAX;
     }
 
+    public float GetMutateRate()
+    {
+        return mutateRate;
+    }
+
     public float GetEnergyMAX()
     {
         return energy_MAX;
+    }
+
+    public void SetEnergyMAX(float input)
+    {
+        energy_MAX = input;
+        energy = energy_MAX;
     }
 
     public float GetVisionRange()
@@ -444,14 +457,31 @@ public class Animal : MonoBehaviour
         return visionRange;
     }
 
+    public void SetVisionRange(float input)
+    {
+        visionRange = input;
+    }
+
     public float GetSize()
     {
         return size;
     }
 
+    public void SetSize(float input)
+    {
+        size = input;
+    }
+
     public float GetSpeed()
     {
         return speed;
+    }
+
+    public void SetSpeed(float input)
+    {
+        speed = input;
+        CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
+        capsule_controller.max_speed = speed;
     }
 
     public Transform GetTransform()
@@ -472,6 +502,11 @@ public class Animal : MonoBehaviour
     public double GetReproduceProba()
     {
         return reproduceProb;
+    }
+
+    public void SetReproduceProba(double input)
+    {
+        reproduceProb = input;
     }
 
     private bool IfHungry()

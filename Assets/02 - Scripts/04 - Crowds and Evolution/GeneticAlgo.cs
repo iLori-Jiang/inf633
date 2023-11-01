@@ -25,6 +25,8 @@ public class GeneticAlgo : MonoBehaviour
     protected float width;
     protected float height;
 
+    private System.Random random;
+
     // Record
     private int frame = 0;
     private int recordFreq = 6;
@@ -48,6 +50,8 @@ public class GeneticAlgo : MonoBehaviour
         animal_popSize = 250;
         predator_popSize = 80;
         vegetationGrowthRate = 0.2f;
+
+        random = new System.Random();
 
         // Init record
         frame = 0;
@@ -207,7 +211,8 @@ public class GeneticAlgo : MonoBehaviour
         // var ani = animal.GetComponent<Animal>();
         // ani.InheritBrain(parent.GetBrain(), true);
 
-        animal.GetComponent<Animal>().Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
+        // animal.GetComponent<Animal>().Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
+        Mutate(animal.GetComponent<Animal>(), parent.GetMutateRate(), parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
     }
 
     /// <summary>
@@ -227,6 +232,36 @@ public class GeneticAlgo : MonoBehaviour
     public List<GameObject> getAnimals()
     {
         return animals;
+    }
+
+    private void Mutate(Animal animal, float mutateRate, float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
+    {
+        //energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate);
+        //energy = energy_MAX;
+
+        //reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
+        //visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
+        //size = (float)Gaussian(size_parent, size_parent * mutateRate);
+        //speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
+
+        animal.SetEnergyMAX(energy_parent * (float)(1 + mutateRate * Uniform()));
+        animal.SetReproduceProba(reproduce_prob_parent * (float)(1 + mutateRate * Uniform()));
+        animal.SetVisionRange(vision_parent * (float)(1 + mutateRate * Uniform()));
+        animal.SetSize(size_parent * (float)(1 + mutateRate * Uniform()));
+        animal.SetSpeed(speed_parent * (float)(1 + mutateRate * Uniform()));
+    }
+
+    private double Gaussian(double mean, double std)
+    {
+        double u1 = 1.0 - random.NextDouble();
+        double u2 = 1.0 - random.NextDouble();
+        double standardNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+        return mean + std * standardNormal;
+    }
+
+    private double Uniform()
+    {
+        return (random.NextDouble() * 2) - 1;   // [-1, 1]
     }
 
     private void Record()
