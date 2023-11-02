@@ -96,16 +96,16 @@ public class GeneticAlgo : MonoBehaviour
         frame += 1;
 
         // Keeps animal to a minimum.
-        while (animals.Count < animal_popSize / 4)
-        {
-            animals.Add(makeAnimal());
-        }
+        //while (animals.Count < animal_popSize / 4)
+        //{
+        //    animals.Add(makeAnimal());
+        //}
         customTerrain.debug.text = "#N herbivore: " + animals.Count.ToString();
 
-        while (predators.Count < predator_popSize / 4)
-        {
-            predators.Add(makePredator());
-        }
+        //while (predators.Count < predator_popSize / 4)
+        //{
+        //    predators.Add(makePredator());
+        //}
         customTerrain.debug.text += "\n#N carnivore: " + predators.Count.ToString();
 
         // Update grass elements/food resources.
@@ -212,7 +212,7 @@ public class GeneticAlgo : MonoBehaviour
         // ani.InheritBrain(parent.GetBrain(), true);
 
         // animal.GetComponent<Animal>().Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
-        Mutate(animal.GetComponent<Animal>(), parent.GetMutateRate(), parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
+        // Mutate(animal.GetComponent<Animal>(), parent.GetMutateRate(), parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
     }
 
     /// <summary>
@@ -232,6 +232,11 @@ public class GeneticAlgo : MonoBehaviour
     public List<GameObject> getAnimals()
     {
         return animals;
+    }
+
+    public List<GameObject> getPredators()
+    {
+        return predators;
     }
 
     private void Mutate(Animal animal, float mutateRate, float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
@@ -286,13 +291,23 @@ public class GeneticAlgo : MonoBehaviour
             //Debug.Log("     Vision: " + animal.GetVisionRange());
         }
 
-        energyAnimal.Add(energy_animal_sum / animals.Count);
-        visionAnimal.Add(vision_animal_sum / animals.Count);
-        speedAnimal.Add(speed_animal_sum / animals.Count);
-        reproduceProbAnimal.Add(reproduce_pro_animal_sum / animals.Count);
+        if (animals.Count > 0)
+        {
+            energyAnimal.Add(energy_animal_sum / animals.Count);
+            visionAnimal.Add(vision_animal_sum / animals.Count);
+            speedAnimal.Add(speed_animal_sum / animals.Count);
+            reproduceProbAnimal.Add(reproduce_pro_animal_sum / animals.Count);
+        }
+        else
+        {
+            energyAnimal.Add(0);
+            visionAnimal.Add(0);
+            speedAnimal.Add(0);
+            reproduceProbAnimal.Add(0);
+        }
 
-        //Debug.Log("Energy Max: " + energy_animal_sum / animals.Count);
-        //Debug.Log("Vision: " + vision_animal_sum / animals.Count);
+        Debug.Log("Energy Max: " + energy_animal_sum / animals.Count);
+        Debug.Log("Vision: " + vision_animal_sum / animals.Count);
 
         float energy_predator_sum = 0.0f;
         float vision_predator_sum = 0.0f;
@@ -308,10 +323,21 @@ public class GeneticAlgo : MonoBehaviour
             reproduce_pro_predator_sum += predator.GetReproduceProba();
         }
 
-        energyPredator.Add(energy_predator_sum / predators.Count);
-        visionPredator.Add(vision_predator_sum / predators.Count);
-        speedPredator.Add(speed_predator_sum / predators.Count);
-        reproduceProbPredator.Add(reproduce_pro_predator_sum / predators.Count);
+        if (predators.Count > 0)
+        {
+            energyPredator.Add(energy_predator_sum / predators.Count);
+            visionPredator.Add(vision_predator_sum / predators.Count);
+            speedPredator.Add(speed_predator_sum / predators.Count);
+            reproduceProbPredator.Add(reproduce_pro_predator_sum / predators.Count);
+        }
+        else
+        {
+            energyPredator.Add(0);
+            visionPredator.Add(0);
+            speedPredator.Add(0);
+            reproduceProbPredator.Add(0);
+        }
+        
     }
 
     private void SaveResult()

@@ -15,6 +15,7 @@ public class Animal : MonoBehaviour
     public float maxAngle = 10.0f;
     public float maxSpeed = 0.5f;
     private float speed;
+    private float speedConsume;
 
     [Header("Energy parameters")]
     public float maxEnergy = 100.0f;
@@ -24,10 +25,13 @@ public class Animal : MonoBehaviour
     private float energy_MAX;
     private float energy;
 
+    [Header("Reproduce parameters")]
+    public double maxReproduceProb = 0.5;
     private double reproduceProb = 0.5;
-    private int reproduceTime = 10;
+    public float reproduceEnergyCost = 20f;
+    public int reproduceTime = 10;
     private int reproduceCounter;
-    private int matureTime = 10;
+    public int matureTime = 10;
     private int matureCounter;
     private bool ifMature;
 
@@ -83,18 +87,25 @@ public class Animal : MonoBehaviour
     void Start()
     {
         // Initialization
-        mutateRate = 0.2f;
-        maxSpeed = 0.5f;
+        mutateRate = 0.3f;
+        //if (!if_animal)
+        //    mutateRate *= 1.5f;
+        maxSpeed = 6.0f;
+        if (!if_animal)
+            maxSpeed *= 1.3f;
         maxEnergy = 180.0f;
         lossEnergy = 0.5f;
-        gainEnergy = 20f;
-        maxVision = 40.0f;
+        gainEnergy = 5f;
+        maxVision = 400.0f;
+        if (!if_animal)
+            maxVision *= 0.5f;
         maxSize = 5.0f;
         hunger = 0.7f;
-        eatingRange = 0.3f;
+        eatingRange = 0.2f;
 
-        reproduceProb = 0.2;
-        reproduceTime = 30;
+        reproduceEnergyCost = 5f;
+        maxReproduceProb = 0.4;
+        reproduceTime = 10;
         matureTime = 100;
 
         reproduceCounter = 0;
@@ -108,13 +119,26 @@ public class Animal : MonoBehaviour
         // networkStruct = new int[] { nEyes, 5, 1 };
         tfm = transform;
 
-        energy_MAX = maxEnergy * (float)(1 + mutateRate * Uniform());
-        energy = energy_MAX;
-        visionRange = maxVision * (float)(1 + mutateRate * Uniform());
-        size = maxSize * (float)(1 + mutateRate * Uniform());
-        speed = maxSpeed * (float)(1 + mutateRate * Uniform());
+        // Random Init
+        //energy_MAX = maxEnergy * (float)(1 + mutateRate * Uniform());
+        //energy = energy_MAX;
+        //visionRange = maxVision * (float)(1 + mutateRate * Uniform());
+        //size = maxSize * (float)(1 + mutateRate * Uniform());
+        //speed = maxSpeed * (float)(1 + mutateRate * Uniform());
+        //reproduceProb = maxReproduceProb * (float)(1 + mutateRate * Uniform());
 
-        
+        energy_MAX = (float)Gaussian(maxEnergy, maxEnergy * mutateRate);
+        energy = energy_MAX;
+        visionRange = (float)Gaussian(maxVision, maxVision * mutateRate);
+        size = (float)Gaussian(maxSize, maxSize * mutateRate);
+        speed = (float)Gaussian(maxSpeed, maxSpeed * mutateRate);
+        if (speed > maxSpeed)
+            speedConsume = (speed - maxSpeed) / maxSpeed * lossEnergy * 0.3f;
+        else
+            speedConsume = 0.0f;
+        reproduceProb = Gaussian(maxReproduceProb, maxReproduceProb * mutateRate);
+
+
         // Renderer used to update animal color.
         // It needs to be updated for more complex models.
         MeshRenderer renderer = GetComponentInChildren<MeshRenderer>();
@@ -142,7 +166,7 @@ public class Animal : MonoBehaviour
         }
 
         // For each frame, we lose lossEnergy
-        energy -= lossEnergy;
+        energy -= lossEnergy + speedConsume;
 
         // If the position can eat something
         if (IfHungry())
@@ -178,13 +202,65 @@ public class Animal : MonoBehaviour
 
         float[] target;
         if (if_animal)
-            target = UpdateVisionGrass();
+        {
+            // See if there are predator nearby
+            target = UpdateVisionPredator();
+            // If not predator nearby, search for grass
+            if (target[0] == -1f && target[1] == -1f)
+                target = UpdateVisionGrass();
+        }
         else
+            // Predator search for meat
             target = UpdateVisionMeat();
         
-        Vector3 targetPosition = new Vector3(target[0], tfm.position.y, target[1]);
+        Vector3 targetPosition = new(target[0], tfm.position.y, target[1]);
         tfm.LookAt(targetPosition);
 
+    }
+
+    // Look for enemy
+    private float[] UpdateVisionPredator()
+    {
+        // location of the animal
+        float x = tfm.position.x;
+        float y = tfm.position.z;
+        Vector2 ani_pos = new(x, y);
+
+        List<GameObject> predators = genetic_algo.getPredators();
+
+        float cloest_x = 0;
+        float cloest_y = 0;
+        float cloest_distance = visionRange + 0.1f;
+
+        bool if_found = false;
+
+        for (int i=0; i<predators.Count; i++)
+        {
+            float x_pre = predators[i].transform.position.x;
+            float y_pre = predators[i].transform.position.z;
+            Vector2 pre_pos = new(x_pre, y_pre);
+
+            float distance = Vector2.Distance(ani_pos, pre_pos);
+
+            if (distance < cloest_distance)
+            {
+                cloest_distance = distance;
+                cloest_x = x_pre;
+                cloest_y = y_pre;
+                if_found = true;
+            }
+        }
+
+        if (if_found)
+        {
+            float[] result = new float[] { x - (cloest_x - x), y - (cloest_y - y) };
+            return result;
+        }
+        else
+        {
+            float[] result = new float[] { -1f, -1f };
+            return result;
+        }
     }
 
     // Look for grass
@@ -557,6 +633,8 @@ public class Animal : MonoBehaviour
             {
                 genetic_algo.addOffspring(this);
 
+                energy -= reproduceEnergyCost;
+
                 reproduceCounter += 1;
 
                 if (if_animal)
@@ -579,7 +657,12 @@ public class Animal : MonoBehaviour
         double u1 = 1.0 - random.NextDouble();
         double u2 = 1.0 - random.NextDouble();
         double standardNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
-        return mean + std * standardNormal;
+        double result = mean + std * standardNormal;
+
+        if (result > 0)
+            return result;
+        else
+            return 0.001f;
     }
 
     private double Uniform()
