@@ -71,15 +71,6 @@ public class Animal : MonoBehaviour
     // Renderer.
     private Material mat = null;
 
-    //// display info
-    //private float displayDuration = 2.0f; // Duration in seconds to display the text.
-    //private int fontSize = 200;
-
-    //private string displayText = "I'm eating!";
-    //private float eatDisplayStartTime;
-    //private bool isEatDisplaying;
-    //private Text eatLabel;
-
     //// motion controller
     //private CapsuleAutoController capsule_controller;
     //private HumanoidAutoController human_controller;
@@ -90,7 +81,7 @@ public class Animal : MonoBehaviour
         mutateRate = 0.3f;
         //if (!if_animal)
         //    mutateRate *= 1.5f;
-        maxSpeed = 6.0f;
+        maxSpeed = 3.0f;
         if (!if_animal)
             maxSpeed *= 1.3f;
         maxEnergy = 180.0f;
@@ -99,9 +90,11 @@ public class Animal : MonoBehaviour
         maxVision = 400.0f;
         if (!if_animal)
             maxVision *= 0.5f;
-        maxSize = 5.0f;
+        maxSize = 1.0f;
+        if (!if_animal)
+            maxSize = 3.0f;
         hunger = 0.7f;
-        eatingRange = 0.2f;
+        eatingRange = 0.1f * maxSpeed;
 
         reproduceEnergyCost = 5f;
         maxReproduceProb = 0.4;
@@ -130,7 +123,7 @@ public class Animal : MonoBehaviour
         energy_MAX = (float)Gaussian(maxEnergy, maxEnergy * mutateRate);
         energy = energy_MAX;
         visionRange = (float)Gaussian(maxVision, maxVision * mutateRate);
-        size = (float)Gaussian(maxSize, maxSize * mutateRate);
+        size = (float)Gaussian(maxSize, maxSize * mutateRate * 0.5);
         speed = (float)Gaussian(maxSpeed, maxSpeed * mutateRate);
         if (speed > maxSpeed)
             speedConsume = (speed - maxSpeed) / maxSpeed * lossEnergy * 0.3f;
@@ -138,17 +131,18 @@ public class Animal : MonoBehaviour
             speedConsume = 0.0f;
         reproduceProb = Gaussian(maxReproduceProb, maxReproduceProb * mutateRate);
 
+        // speed
+        CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
+        capsule_controller.max_speed = speed;
+
+        // size
+        tfm.localScale = new Vector3(size, size, size);
 
         // Renderer used to update animal color.
         // It needs to be updated for more complex models.
         MeshRenderer renderer = GetComponentInChildren<MeshRenderer>();
         if (renderer != null)
             mat = renderer.material;
-
-        //// initial display info
-        //isEatDisplaying = false;
-        //eatLabel.enabled = false;
-        //eatLabel.fontSize = fontSize;
 
     }
 
@@ -343,28 +337,8 @@ public class Animal : MonoBehaviour
             if (energy > maxEnergy)
                 energy = maxEnergy;
 
-            // display info
-            //Vector3 objectPosition = Camera.main.WorldToScreenPoint(tfm.position);
-
-            //if (!isEatDisplaying)
-            //{
-            //    isEatDisplaying = true;
-            //    eatDisplayStartTime = Time.time;
-            //    eatLabel.text = displayText;
-            //    eatLabel.rectTransform.position = objectPosition;
-            //    eatLabel.enabled = true; // Enable the text.
-            //}
-
             terrain.debug.text += "\n\nEating Grass!!!";
         }
-
-        //// if the text should be destoryed
-        //if (isEatDisplaying && Time.time - eatDisplayStartTime >= displayDuration)
-        //{
-        //    // The time has passed; hide the text.
-        //    eatLabel.enabled = false;
-        //    isEatDisplaying = false; // Reset the flag.
-        //}
     }
 
     // Look for animal
@@ -389,8 +363,8 @@ public class Animal : MonoBehaviour
         // transerverse its surrounding vision range
         for (int i=0; i<animals.Count; i++)
         {
-            float x_ani = animals[i].GetComponent<Animal>().GetTransform().position.x;
-            float y_ani = animals[i].GetComponent<Animal>().GetTransform().position.z;
+            float x_ani = animals[i].transform.position.x;
+            float y_ani = animals[i].transform.position.z;
             Vector2 ani_pos = new(x_ani, y_ani);
 
             float distance = Vector2.Distance(predator_pos, ani_pos);
@@ -427,8 +401,8 @@ public class Animal : MonoBehaviour
 
         for (int i=0; i<animals.Count; i++)
         {
-            float x_ani = animals[i].GetComponent<Animal>().GetTransform().position.x;
-            float y_ani = animals[i].GetComponent<Animal>().GetTransform().position.z;
+            float x_ani = animals[i].transform.position.x;
+            float y_ani = animals[i].transform.position.z;
             Vector2 ani_pos = new(x_ani, y_ani);
 
             float distance = Vector2.Distance(predator_pos, ani_pos);
