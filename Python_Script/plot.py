@@ -7,7 +7,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 CROP = False
 
-INPUT = "run_2"
+INPUT = "run_6"
 out_dir = "output/" + INPUT + "/"
 out_dir = os.path.join(script_dir, out_dir)
 

@@ -139,6 +139,20 @@ public class GeneticAlgo : MonoBehaviour
         customTerrain.saveDetails();
     }
 
+    public GameObject makeAnimal(Vector3 position, Animal parent)
+    {
+        GameObject animal = Instantiate(animalPrefab, transform);
+        var ani = animal.GetComponent<Animal>();
+        ani.SetAnimalType(true);
+        ani.Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
+        ani.Setup(customTerrain, this);
+        animal.transform.position = position;
+        animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
+        animal.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+
+        return animal;
+    }
+
     /// <summary>
     /// Method to instantiate an animal prefab. It must contain the animal.cs class attached.
     /// </summary>
@@ -167,6 +181,20 @@ public class GeneticAlgo : MonoBehaviour
         float z = UnityEngine.Random.value * height;
         float y = customTerrain.getInterp(x / scale.x, z / scale.z);
         return makeAnimal(new Vector3(x, y, z));
+    }
+
+    public GameObject makePredator(Vector3 position, Animal parent)
+    {
+        GameObject predator = Instantiate(predatorPrefab, transform);
+        var ani = predator.GetComponent<Animal>();
+        ani.SetAnimalType(false);
+        ani.Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
+        ani.Setup(customTerrain, this);
+        predator.transform.position = position;
+        predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
+        predator.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+
+        return predator;
     }
 
     public GameObject makePredator(Vector3 position)
@@ -199,20 +227,20 @@ public class GeneticAlgo : MonoBehaviour
         GameObject animal;
         if (parent.GetAnimalType())
         {
-            animal = makeAnimal(parent.transform.position);
+            animal = makeAnimal(parent.transform.position, parent);
             animals.Add(animal);
         }
         else
         {
-            animal = makePredator(parent.transform.position);
+            animal = makePredator(parent.transform.position, parent);
             predators.Add(animal);
         }
 
         // var ani = animal.GetComponent<Animal>();
         // ani.InheritBrain(parent.GetBrain(), true);
 
-        // animal.GetComponent<Animal>().Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
-        // Mutate(animal.GetComponent<Animal>(), parent.GetMutateRate(), parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
+        //var ani = animal.GetComponent<Animal>();
+        //ani.Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
     }
 
     /// <summary>
@@ -237,36 +265,6 @@ public class GeneticAlgo : MonoBehaviour
     public List<GameObject> getPredators()
     {
         return predators;
-    }
-
-    private void Mutate(Animal animal, float mutateRate, float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
-    {
-        //energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate);
-        //energy = energy_MAX;
-
-        //reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
-        //visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
-        //size = (float)Gaussian(size_parent, size_parent * mutateRate);
-        //speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
-
-        animal.SetEnergyMAX(energy_parent * (float)(1 + mutateRate * Uniform()));
-        animal.SetReproduceProba(reproduce_prob_parent * (float)(1 + mutateRate * Uniform()));
-        animal.SetVisionRange(vision_parent * (float)(1 + mutateRate * Uniform()));
-        animal.SetSize(size_parent * (float)(1 + mutateRate * Uniform()));
-        animal.SetSpeed(speed_parent * (float)(1 + mutateRate * Uniform()));
-    }
-
-    private double Gaussian(double mean, double std)
-    {
-        double u1 = 1.0 - random.NextDouble();
-        double u2 = 1.0 - random.NextDouble();
-        double standardNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
-        return mean + std * standardNormal;
-    }
-
-    private double Uniform()
-    {
-        return (random.NextDouble() * 2) - 1;   // [-1, 1]
     }
 
     private void Record()

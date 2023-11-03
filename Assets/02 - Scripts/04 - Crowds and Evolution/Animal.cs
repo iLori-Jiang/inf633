@@ -50,6 +50,8 @@ public class Animal : MonoBehaviour
     public float eatingRange = 0.4f;
     private bool if_animal;
 
+    private bool if_init = false;
+
     // private int[] networkStruct;
     // private SimpleNeuralNet brain = null;
 
@@ -78,28 +80,32 @@ public class Animal : MonoBehaviour
     void Start()
     {
         // Initialization
-        mutateRate = 0.3f;
+        mutateRate = 0.2f;
         //if (!if_animal)
         //    mutateRate *= 1.5f;
-        maxSpeed = 3.0f;
+        maxSpeed = 2.0f;
         if (!if_animal)
             maxSpeed *= 1.3f;
-        maxEnergy = 180.0f;
-        lossEnergy = 0.5f;
-        gainEnergy = 5f;
-        maxVision = 400.0f;
-        if (!if_animal)
-            maxVision *= 0.5f;
+        maxEnergy = 200f;
+        lossEnergy = 0.8f;
+        gainEnergy = 30f;
+        //if (!if_animal)
+        //    gainEnergy *= 1.5f;
+        maxVision = 20.0f;
+        //if (!if_animal)
+        //    maxVision *= 1.5f;
         maxSize = 1.0f;
         if (!if_animal)
-            maxSize = 3.0f;
+            maxSize = 2.4f;
         hunger = 0.7f;
-        eatingRange = 0.1f * maxSpeed;
+        eatingRange = 0.4f * maxSpeed;
 
-        reproduceEnergyCost = 5f;
+        reproduceEnergyCost = 20f;
+        if (!if_animal)
+            reproduceEnergyCost *= 1.3f;
         maxReproduceProb = 0.4;
-        reproduceTime = 10;
-        matureTime = 100;
+        reproduceTime = 30;
+        matureTime = 70;
 
         reproduceCounter = 0;
         matureCounter = 0;
@@ -113,30 +119,11 @@ public class Animal : MonoBehaviour
         tfm = transform;
 
         // Random Init
-        //energy_MAX = maxEnergy * (float)(1 + mutateRate * Uniform());
-        //energy = energy_MAX;
-        //visionRange = maxVision * (float)(1 + mutateRate * Uniform());
-        //size = maxSize * (float)(1 + mutateRate * Uniform());
-        //speed = maxSpeed * (float)(1 + mutateRate * Uniform());
-        //reproduceProb = maxReproduceProb * (float)(1 + mutateRate * Uniform());
-
-        energy_MAX = (float)Gaussian(maxEnergy, maxEnergy * mutateRate);
-        energy = energy_MAX;
-        visionRange = (float)Gaussian(maxVision, maxVision * mutateRate);
-        size = (float)Gaussian(maxSize, maxSize * mutateRate * 0.5);
-        speed = (float)Gaussian(maxSpeed, maxSpeed * mutateRate);
-        if (speed > maxSpeed)
-            speedConsume = (speed - maxSpeed) / maxSpeed * lossEnergy * 0.3f;
-        else
-            speedConsume = 0.0f;
-        reproduceProb = Gaussian(maxReproduceProb, maxReproduceProb * mutateRate);
-
-        // speed
-        CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
-        capsule_controller.max_speed = speed;
-
-        // size
-        tfm.localScale = new Vector3(size, size, size);
+        if (!if_init)
+        {
+            Mutate(maxEnergy, maxVision, maxSize, maxSpeed, maxReproduceProb);
+            // NoMutate(maxEnergy, maxVision, maxSize, maxSpeed, maxReproduceProb);
+        }
 
         // Renderer used to update animal color.
         // It needs to be updated for more complex models.
@@ -544,6 +531,16 @@ public class Animal : MonoBehaviour
         // Debug.Log("speed: " + input + " | " + speed);
     }
 
+    public bool GetIfInit()
+    {
+        return if_init;
+    }
+
+    public void SetIfInit(bool input)
+    {
+        if_init = input;
+    }
+
     public Transform GetTransform()
     {
         return tfm;
@@ -644,26 +641,71 @@ public class Animal : MonoBehaviour
         return (random.NextDouble() * 2) - 1;   // [-1, 1]
     }
 
-    public void Mutate(float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
+    public void NoMutate(float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
     {
-        //energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate);
-        //energy = energy_MAX;
-
-        //reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
-        //visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
-        //size = (float)Gaussian(size_parent, size_parent * mutateRate);
-        //speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
-
-        energy_MAX = energy_parent * (float)(1 + mutateRate * Uniform());
+        energy_MAX = energy_parent;
         energy = energy_MAX;
 
-        reproduceProb = reproduce_prob_parent * (float)(1 + mutateRate * Uniform());
-        visionRange = vision_parent * (float)(1 + mutateRate * Uniform());
-        size = size_parent * (float)(1 + mutateRate * Uniform());
-        speed = speed_parent * (float)(1 + mutateRate * Uniform());
+        visionRange = vision_parent;
+        size = size_parent;
+
+        speed = speed_parent;
+        speedConsume = 0.0f;
+
+        reproduceProb = reproduce_prob_parent;
 
         // size
-        // tfm.localScale = new Vector3(size, size, size);
+        tfm.localScale = new Vector3(size, size, size);
+
+        // speed
+        //if (if_animal == true)
+        //{
+        //    CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
+        //    capsule_controller.max_speed = speed;
+        //}
+        //else
+        //{
+        //    HumanoidAutoController human_controller = GetComponent<HumanoidAutoController>();
+        //    human_controller.max_speed = speed;
+        //}
+        CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
+        capsule_controller.max_speed = speed;
+    }
+
+    public void Mutate(float energy_parent, float vision_parent, float size_parent, float speed_parent, double reproduce_prob_parent)
+    {
+        energy_MAX = (float)Gaussian(energy_parent, energy_parent * mutateRate * 0.15);
+        energy = energy_MAX;
+
+        visionRange = (float)Gaussian(vision_parent, vision_parent * mutateRate);
+        size = (float)Gaussian(size_parent, size_parent * mutateRate * 0.3);
+
+        speed = (float)Gaussian(speed_parent, speed_parent * mutateRate);
+        if (speed > maxSpeed)
+            speedConsume = (speed - maxSpeed) / maxSpeed * lossEnergy * 0.2f;
+        else
+            speedConsume = 0.0f;
+
+        reproduceProb = Gaussian(reproduce_prob_parent, reproduce_prob_parent * mutateRate);
+
+        //energy_MAX = energy_parent * (float)(1 + mutateRate * Uniform());
+        //energy = energy_MAX;
+
+        //reproduceProb = reproduce_prob_parent * (float)(1 + mutateRate * Uniform());
+        //visionRange = vision_parent * (float)(1 + mutateRate * Uniform());
+        //size = size_parent * (float)(1 + mutateRate * Uniform());
+        //speed = speed_parent * (float)(1 + mutateRate * Uniform());
+
+        if_init = true;
+
+        // DEBUG
+        //Debug.Log("     Energy: " + energy_MAX + " | " + energy_parent);
+        //Debug.Log("     Vision: " + visionRange + " | " + vision_parent);
+        //Debug.Log("     Speed: " + speed + " | " + speed_parent);
+
+        // size
+        if (tfm != null)
+            tfm.localScale = new Vector3(size, size, size);
 
         // speed
         //if (if_animal == true)
