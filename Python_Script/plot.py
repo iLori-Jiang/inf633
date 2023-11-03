@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from pathlib import Path
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
+
+CROP = False
 
 INPUT = "run_2"
 out_dir = "output/" + INPUT + "/"
@@ -29,23 +32,24 @@ for i, attribute in enumerate(ATTRIBUTES):
     data1 = np.loadtxt(animal_file)
     data2 = np.loadtxt(predator_file)
 
-    if attribute == "Number":
-        indices = np.where(data1 < 50)
-        if indices[0].size > 0:
-            first_indice_1 = indices[0][0]
-        else:
-            first_indice_1 = len(data1)
+    if CROP:
+        if attribute == "Number":
+            indices = np.where(data1 < 50)
+            if indices[0].size > 0:
+                first_indice_1 = indices[0][0]
+            else:
+                first_indice_1 = len(data1)
 
-        indices = np.where(data2 < 30)
-        if indices[0].size > 0:
-            first_indice_2 = indices[0][0]
-        else:
-            first_indice_2 = len(data2)
-        
-        end = min(first_indice_1, first_indice_2)
-        
-    data1 = data1[:end+1]
-    data2 = data2[:end+1]
+            indices = np.where(data2 < 30)
+            if indices[0].size > 0:
+                first_indice_2 = indices[0][0]
+            else:
+                first_indice_2 = len(data2)
+            
+            end = min(first_indice_1, first_indice_2)
+            
+        data1 = data1[:end+1]
+        data2 = data2[:end+1]
 
     x1 = np.arange(len(data1))
     x2 = np.arange(len(data2))
