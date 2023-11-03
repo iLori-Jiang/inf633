@@ -4,6 +4,10 @@ import os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
+INPUT = "run_2"
+out_dir = "output/" + INPUT + "/"
+out_dir = os.path.join(script_dir, out_dir)
+
 # Define fixed colors for each group
 COLORS = {"herbivore": "#EE9E64", "carnivore": "#71AFE2"}
 
@@ -11,10 +15,15 @@ ATTRIBUTES = ["Number", "Energy", "Speed", "Vision", "ReproduceProb"]
 
 end = -1
 
+# create directory
+if not os.path.exists(out_dir):
+    output_directory = Path(out_dir)
+    output_directory.mkdir(parents=True, exist_ok=True)
+
 # Loop through the files in pairs
 for i, attribute in enumerate(ATTRIBUTES):
-    animal_file = os.path.join(script_dir, "input/Animal" + attribute + ".txt")
-    predator_file = os.path.join(script_dir, "input/Predator" + attribute + ".txt")
+    animal_file = os.path.join(script_dir, "input/" + INPUT + "/Animal" + attribute + ".txt")
+    predator_file = os.path.join(script_dir, "input/" + INPUT + "/Predator" + attribute + ".txt")
 
     # Load data from the two files in the pair
     data1 = np.loadtxt(animal_file)
@@ -61,7 +70,7 @@ for i, attribute in enumerate(ATTRIBUTES):
 
     plt.title(attribute)
 
-    file_name = "output/" + attribute + ".png"
+    file_name = out_dir + attribute + ".png"
     plt.savefig(file_name)
 
     # Show the plot
