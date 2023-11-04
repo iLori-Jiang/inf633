@@ -71,6 +71,9 @@ public class FabricIK : MonoBehaviour
             // START TODO ###################
 
             // Just a placeholder. Change with the correct transform!
+            //bones[i] = current;
+
+
             bones[i] = current;
             startingBoneRotation[i] = current.rotation;
 
@@ -94,7 +97,7 @@ public class FabricIK : MonoBehaviour
             {
                 // START TODO ###################
 
-                bonesLength[i] = Vector3.Distance(bones[i + 1].position, bones[i].position);
+                bonesLength[i] = Vector3.Distance(bones[i].position, bones[i+1].position);
                 completeLength += bonesLength[i];
 
                 // END TODO ###################
@@ -156,18 +159,14 @@ public class FabricIK : MonoBehaviour
         // START TODO ###################
 
         // Change condition!
-        if (Vector3.Distance(bonesPositions[0], target.position) >= completeLength)
+        if ((Vector3.Distance(target.position, bonesPositions[0]))>=completeLength)
         {
-            Vector3 direction = target.position - bonesPositions[0];
-            direction = direction.normalized;
-
-            float current_length = 0;
-
             for (int i = 1; i < bones.Length; i++)
             {
-                current_length += bonesLength[i - 1];
-                bonesPositions[i] = current_length * direction;
+                bonesPositions[i] = bones[i - 1].position + ((target.position - bones[0].position).normalized * bonesLength[i-1]);
+
             }
+            // bonesPositions[i] = ...
         }
 
         // END TODO ###################
@@ -176,8 +175,10 @@ public class FabricIK : MonoBehaviour
          * Second, if the target is closer, in such a way that the chain will need to move in order to reach it.
          * In this case, IK takes places. Fabric IK works with a Forward pass and a Backward pass:
          * 
-         * Forward pass: We set the end-effector position where the target is, and we change the position of the bones towards the root, while keeping the distance between them constant.
-         * Backward pass: Since we want the root bone to not move, we place it again in its original position and we again change the position of the bones, now towards the target, also keeping the distance between them constant.
+         * Forward pass: We set the end-effector position where the target is, and we change the position of the 
+         * bones towards the root, while keeping the distance between them constant.
+         * Backward pass: Since we want the root bone to not move, we place it again in its original position and 
+         * we again change the position of the bones, now towards the target, also keeping the distance between them constant.
          * 
          * This can be repeated by n iterations, and it is stopped when the end-effector is close enough to the target (measured by delta).
          *
@@ -202,15 +203,10 @@ public class FabricIK : MonoBehaviour
 
                     // START TODO ###################
 
-                    if (i == bonesPositions.Length - 1)
-                    {
+                    if (i == (bonesPositions.Length - 1))
                         bonesPositions[i] = target.position;
-                    }
                     else
-                    {
-                        bonesPositions[i] = bonesPositions[i + 1] + bonesLength[i] * (bonesPositions[i] - bonesPositions[i + 1]).normalized;
-                    }
-                         
+                         bonesPositions[i] = bonesPositions[i+1] + ((bonesPositions[i] - bonesPositions[i+1]).normalized) * bonesLength[i] ;
 
                     // END TODO ###################
                 }
@@ -224,7 +220,7 @@ public class FabricIK : MonoBehaviour
 
                     // START TODO ###################
 
-                    bonesPositions[i] = (bonesPositions[i] - bonesPositions[i - 1]).normalized * bonesLength[i - 1] + bonesPositions[i - 1];
+                    bonesPositions[i] = bonesPositions[i-1] + ((bonesPositions[i] - bonesPositions[i-1]).normalized) * bonesLength[i-1];
 
                     // END TODO ###################
 
