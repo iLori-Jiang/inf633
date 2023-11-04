@@ -5,6 +5,7 @@ using UnityEngine;
 public class QuadrupedProceduralMotion : MonoBehaviour
 {
     [Header("Goal")]
+    private GameObject goalObject;
     public Transform goal; // The character will move towards this goal.
 
     // Settings relative to the root motion.
@@ -62,11 +63,27 @@ public class QuadrupedProceduralMotion : MonoBehaviour
         StartCoroutine(Gait());
         TailInitialize();
         BodyInitialize();
+
+        //
+        goalObject = new GameObject();
+
+        // This gets the Transform component of the new GameObject
+        goal = goalObject.transform;
+
+        // Now you can set the position, rotation, and scale of the newTransform as needed
+        goal.position = new Vector3(0, 0, 0);
+        goal.rotation = Quaternion.identity;
+        goal.localScale = new Vector3(1, 1, 1);
     }
 
     // Update is called every frame, if the MonoBehaviour is enabled.
     private void Update()
-    {        
+    {
+        //float x_direction = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+        //float z_direction = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+        //// goal.position = new Vector3(hips.position.x + x_direction, 0, hips.position.z + z_direction);
+        //goal.position = new Vector3(hips.position.x + x_direction, 0, hips.position.z + z_direction);
+
         RootMotion();
     }
 
@@ -86,7 +103,7 @@ public class QuadrupedProceduralMotion : MonoBehaviour
     private void RootMotion()
     {
         // Get the vector towards the goal and projectected it on the plane defined by the normal transform.up.
-        Vector3 towardGoal = goal.position - transform.position;
+        Vector3 towardGoal = goal.position - this.transform.position;
         Vector3 towardGoalProjected = Vector3.ProjectOnPlane(towardGoal, transform.up);
 
         // Angles between the forward direction and the direction to the goal. 
@@ -100,7 +117,7 @@ public class QuadrupedProceduralMotion : MonoBehaviour
 
         // Initialize zero root velocity.
         Vector3 targetVelocity = Vector3.zero;
-
+        //print("true");
         // Estimating targetVelocity.
         // Only translate if we are close facing to the goal.
         if (Mathf.Abs(angToGoal) < 90)
@@ -108,15 +125,16 @@ public class QuadrupedProceduralMotion : MonoBehaviour
             var distToGoal = towardGoalProjected.magnitude;
 
             // Move towards target if we are too far.
-            if (distToGoal > maxDistToGoal)
-            {
-                targetVelocity = moveSpeed * towardGoalProjected.normalized;
-            }
-            // Move away from target if we are too close.
-            else if (distToGoal < minDistToGoal)
-            {
-                targetVelocity = moveSpeed * -towardGoalProjected.normalized * moveBackwardFactor;
-            }
+            //if (distToGoal > maxDistToGoal)
+            //{
+            //    targetVelocity = moveSpeed * towardGoalProjected.normalized;
+            //}
+            targetVelocity = moveSpeed * towardGoalProjected.normalized;
+            //// Move away from target if we are too close.
+            //else if (distToGoal < minDistToGoal)
+            //{
+            //    targetVelocity = moveSpeed * -towardGoalProjected.normalized * moveBackwardFactor;
+            //}
 
             // Limit velocity progressively as we approach max angular velocity.
             targetVelocity *= Mathf.InverseLerp(turnSpeed, turnSpeed * 0.2f, Mathf.Abs(currentAngularVelocity));
@@ -149,17 +167,18 @@ public class QuadrupedProceduralMotion : MonoBehaviour
     private void RootAdaptation()
     {
         // Origin of the ray.
-        Vector3 raycastOrigin = groundChecker.position;
+        Vector3 raycastOrigin = groundChecker.position + Vector3.up * 1.0f;
 
         // The ray information gives you where you hit and the normal of the terrain in that location.
-        if (Physics.Raycast(raycastOrigin, -transform.up, out RaycastHit hit, Mathf.Infinity))
+        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hit, Mathf.Infinity))
         {
-            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
-            {
+            //if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            //{
                 posHit = hit.point;
                 distanceHit = hit.distance;
                 normalTerrain = hit.normal;
-            }
+                print("True");
+            //}
         }
 
         /*
@@ -171,8 +190,11 @@ public class QuadrupedProceduralMotion : MonoBehaviour
 
         // START TODO ###################
 
-        // hips.position = ...
-        // hips.rotation = ...
+        hips.position = new Vector3(hips.position.x, posHit.y+1.0f, hips.position.z);
+
+        //hips.rotation
+        Quaternion desiredRotation = Quaternion.FromToRotation(hips.up, normalTerrain) * hips.rotation;
+        hips.rotation = Quaternion.Slerp(hips.rotation, desiredRotation, 1 - Mathf.Exp(-heightAcceleration * Time.deltaTime));
 
         // END TODO ###################
     }
@@ -228,16 +250,19 @@ public class QuadrupedProceduralMotion : MonoBehaviour
          * First, we need to get goalWorldLookDir: the position of the goal with respect to the head transform (you can use Debug.DrawRay() to debug it).
          * Use InverseTransformDirection() and headbone.parent to transform it with respect to the parent of the head (goalLocalLookDir).
          * Use RotateTowards() to have Vector3.forward always looking to goalLocalLookDir.
-         * Finally, define targetLocalRotation: The target local angle for your head. The forward axis (along the bone) will need to point to the object. To do this, you can use Quaternion.LookRotation().
+         * Finally, define targetLocalRotation: The target local angle for your head. The forward axis (along the bone) will need to point to the object. 
+         * To do this, you can use Quaternion.LookRotation().
          */
 
         // START TODO ###################
+        
 
-        // goalWorldLookDir = ...
-        // goalLocalLookDir = ...
+        goalWorldLookDir = goal.position - headBone.position;
+        Debug.DrawRay(headBone.position, goalWorldLookDir,Color.blue);
+        goalLocalLookDir = headBone.parent.InverseTransformDirection(goalWorldLookDir);
+        Vector3 newForward = Vector3.RotateTowards(Vector3.forward, goalLocalLookDir,20 * Mathf.Deg2Rad, 0f);
 
-        Quaternion targetLocalRotation = Quaternion.identity; // Change!
-
+        Quaternion targetLocalRotation = Quaternion.LookRotation(newForward);
         // END TODO ###################
 
         /* 
