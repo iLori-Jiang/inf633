@@ -68,12 +68,14 @@ public class QuadrupedProceduralMotion : MonoBehaviour
         goalObject = new GameObject();
 
         // This gets the Transform component of the new GameObject
-        goal = goalObject.transform;
+        //goal = goalObject.transform;
 
-        // Now you can set the position, rotation, and scale of the newTransform as needed
-        goal.position = new Vector3(0, 0, 0);
-        goal.rotation = Quaternion.identity;
-        goal.localScale = new Vector3(1, 1, 1);
+        //// Now you can set the position, rotation, and scale of the newTransform as needed
+        //goal.position = new Vector3(0, 0, 0);
+        //goal.rotation = Quaternion.identity;
+        //goal.localScale = new Vector3(1, 1, 1);
+
+        // goal = transform;
     }
 
     // Update is called every frame, if the MonoBehaviour is enabled.
@@ -81,7 +83,6 @@ public class QuadrupedProceduralMotion : MonoBehaviour
     {
         //float x_direction = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
         //float z_direction = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-        //// goal.position = new Vector3(hips.position.x + x_direction, 0, hips.position.z + z_direction);
         //goal.position = new Vector3(hips.position.x + x_direction, 0, hips.position.z + z_direction);
 
         RootMotion();
@@ -117,7 +118,7 @@ public class QuadrupedProceduralMotion : MonoBehaviour
 
         // Initialize zero root velocity.
         Vector3 targetVelocity = Vector3.zero;
-        //print("true");
+
         // Estimating targetVelocity.
         // Only translate if we are close facing to the goal.
         if (Mathf.Abs(angToGoal) < 90)
@@ -177,7 +178,6 @@ public class QuadrupedProceduralMotion : MonoBehaviour
                 posHit = hit.point;
                 distanceHit = hit.distance;
                 normalTerrain = hit.normal;
-                print("True");
             //}
         }
 

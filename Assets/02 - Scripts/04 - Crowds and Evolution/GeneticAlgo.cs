@@ -25,7 +25,7 @@ public class GeneticAlgo : MonoBehaviour
     protected float width;
     protected float height;
 
-    private System.Random random;
+    private bool if_debug = false;
 
     // Record
     private int frame = 0;
@@ -43,6 +43,8 @@ public class GeneticAlgo : MonoBehaviour
 
     void Start()
     {
+        if_debug = true;
+
         // limit the FPS
         Time.captureFramerate = 10;
 
@@ -51,7 +53,11 @@ public class GeneticAlgo : MonoBehaviour
         predator_popSize = 80;
         vegetationGrowthRate = 1.0f;
 
-        random = new System.Random();
+        if (if_debug)
+        {
+            animal_popSize = 0;
+            predator_popSize = 0;
+        }
 
         // Init record
         frame = 0;
@@ -148,7 +154,10 @@ public class GeneticAlgo : MonoBehaviour
         ani.Setup(customTerrain, this);
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
-        animal.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+        // animal.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+
+        if (if_debug)
+            ani.SetDebug(true);
 
         return animal;
     }
@@ -166,6 +175,9 @@ public class GeneticAlgo : MonoBehaviour
         ani.Setup(customTerrain, this);
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
+
+        if (if_debug)
+            ani.SetDebug(true);
         
         return animal;
     }
@@ -192,7 +204,10 @@ public class GeneticAlgo : MonoBehaviour
         ani.Setup(customTerrain, this);
         predator.transform.position = position;
         predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
-        predator.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+        // predator.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+
+        if (if_debug)
+            ani.SetDebug(true);
 
         return predator;
     }
@@ -205,6 +220,9 @@ public class GeneticAlgo : MonoBehaviour
         ani.Setup(customTerrain, this);
         predator.transform.position = position;
         predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
+
+        if (if_debug)
+            ani.SetDebug(true);
 
         return predator;
     }
@@ -224,6 +242,9 @@ public class GeneticAlgo : MonoBehaviour
     /// <param name="parent"></param>
     public void addOffspring(Animal parent)
     {
+        if (if_debug)
+            return;
+
         GameObject animal;
         if (parent.GetAnimalType())
         {

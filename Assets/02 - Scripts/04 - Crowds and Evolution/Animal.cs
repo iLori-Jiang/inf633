@@ -51,6 +51,7 @@ public class Animal : MonoBehaviour
     private bool if_animal;
 
     private bool if_init = false;
+    private bool if_debug = false;
 
     // private int[] networkStruct;
     // private SimpleNeuralNet brain = null;
@@ -76,6 +77,7 @@ public class Animal : MonoBehaviour
     //// motion controller
     //private CapsuleAutoController capsule_controller;
     //private HumanoidAutoController human_controller;
+    private QuadrupedProceduralMotion quad_controller;
 
     void Start()
     {
@@ -146,6 +148,9 @@ public class Animal : MonoBehaviour
             return;
         }
 
+        if (if_debug)
+            energy = energy_MAX;
+
         // For each frame, we lose lossEnergy
         energy -= lossEnergy + speedConsume;
 
@@ -195,8 +200,16 @@ public class Animal : MonoBehaviour
             target = UpdateVisionMeat();
         
         Vector3 targetPosition = new(target[0], tfm.position.y, target[1]);
-        tfm.LookAt(targetPosition);
 
+        if (if_animal)
+        {
+            // quad_controller.goal.position = targetPosition;
+        }
+        else
+        {
+            tfm.LookAt(targetPosition);
+        }
+        
     }
 
     // Look for enemy
@@ -526,8 +539,11 @@ public class Animal : MonoBehaviour
     public void SetSpeed(float input)
     {
         speed = input;
-        CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
-        capsule_controller.max_speed = speed;
+
+        if (if_animal)
+            quad_controller.moveSpeed = speed; quad_controller.turnSpeed = speed;
+        //else
+        //    capsule_controller.max_speed = speed;
         // Debug.Log("speed: " + input + " | " + speed);
     }
 
@@ -565,6 +581,11 @@ public class Animal : MonoBehaviour
     {
         reproduceProb = input;
         // Debug.Log("reproduce prob: " + input + " | " + reproduceProb);
+    }
+
+    public void SetDebug(bool input)
+    {
+        if_debug = input;
     }
 
     private bool IfHungry()
@@ -655,7 +676,7 @@ public class Animal : MonoBehaviour
         reproduceProb = reproduce_prob_parent;
 
         // size
-        tfm.localScale = new Vector3(size, size, size);
+        // tfm.localScale = new Vector3(size, size, size);
 
         // speed
         //if (if_animal == true)
@@ -704,21 +725,24 @@ public class Animal : MonoBehaviour
         //Debug.Log("     Speed: " + speed + " | " + speed_parent);
 
         // size
-        if (tfm != null)
-            tfm.localScale = new Vector3(size, size, size);
+        //if (tfm != null)
+        //    tfm.localScale = new Vector3(size, size, size);
 
         // speed
-        //if (if_animal == true)
-        //{
-        //    CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
-        //    capsule_controller.max_speed = speed;
-        //}
-        //else
-        //{
-        //    HumanoidAutoController human_controller = GetComponent<HumanoidAutoController>();
-        //    human_controller.max_speed = speed;
-        //}
-        CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
-        capsule_controller.max_speed = speed;
+        if (if_animal)
+        {
+            quad_controller = new QuadrupedProceduralMotion();
+            quad_controller.moveSpeed = speed;
+            // quad_controller.turnSpeed = 150f;
+        }
+        else
+        {
+            //HumanoidAutoController human_controller = GetComponent<HumanoidAutoController>();
+            //human_controller.max_speed = speed;
+            CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
+            if (capsule_controller != null)
+                capsule_controller.max_speed = speed;
+        }
+        
     }
 }
