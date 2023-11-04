@@ -48,11 +48,11 @@ public class FootStepper : MonoBehaviour
 
         // START TODO ###################
 
-        float distFromHome = Vector3.Distance(this.transform.position, homeTransform.position);
-        float angleFromHome = Quaternion.Angle(this.transform.rotation, homeTransform.rotation);
+        float distFromHome = Vector3.Distance(transform.position, homeTransform.position);
+        float angleFromHome = Quaternion.Angle(transform.rotation, homeTransform.rotation);
 
         // Change condition!
-        if (distFromHome > distanceThreshold || angleFromHome > angleThreshold)
+        if (distFromHome>distanceThreshold || angleFromHome>angleThreshold)
         {
             // END TODO ###################
 
@@ -102,17 +102,16 @@ public class FootStepper : MonoBehaviour
          */
 
         // START TODO ###################
-        Vector3 raycastOrigin = homeTransform.position + overshootVector;
-        Vector3 down = transform.TransformDirection(Vector3.down);
 
-        RaycastHit hit;
-        if (Physics.Raycast(raycastOrigin, down, out hit))
+        Vector3 raycastOrigin = homeTransform.position + overshootVector+ Vector3.up*heightOffset;
+
+        if (Physics.Raycast(raycastOrigin, Vector3.down, out RaycastHit hit, Mathf.Infinity, groundRaycastMask))
         {
             endPos = hit.point;
             endNormal = hit.normal;
-    
             return true;
         }
+
         // END TODO ###################
 
         endPos = Vector3.zero;
@@ -165,9 +164,7 @@ public class FootStepper : MonoBehaviour
 
             // START TODO ###################
 
-            //Point P1 = 
-            transform.position = Vector3.Lerp(startPos, endPos, normalizedTime);
-            // transform.position = ...
+            transform.position = Vector3.Slerp(startPos, endPos, normalizedTime);
 
             // END TODO ###################
 
@@ -177,7 +174,7 @@ public class FootStepper : MonoBehaviour
 
             // START TODO ###################
 
-            transform.rotation = endRot;
+            transform.rotation = Quaternion.Slerp(startRot, endRot, normalizedTime);
 
             // END TODO ###################
 
