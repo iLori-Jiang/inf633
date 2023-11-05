@@ -1457,12 +1457,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3404752603996515034}
-  - component: {fileID: 3404752603996515033}
-  - component: {fileID: 3404752603996515032}
-  - component: {fileID: 3404752603996515039}
-  - component: {fileID: 3404752603996515028}
   m_Layer: 2
-  m_Name: Human - (Autonomous)
+  m_Name: Human - (Gene)
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1485,88 +1481,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &3404752603996515033
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3404752603996515038}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 5917c0e93d180a842b61d1ebc62a195c, type: 3}
-  m_Controller: {fileID: 9100000, guid: a8c6a9b0b2f5f3949902be4677f66b4c, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!143 &3404752603996515032
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3404752603996515038}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3404752603996515039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3404752603996515038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da0cc07004fd40a196e4058316a4276, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  swapRate: 0.01
-  mutateRate: 0.4
-  swapStrength: 10
-  mutateStrength: 0.5
-  maxAngle: 10
-  maxSpeed: 0.5
-  maxEnergy: 100
-  lossEnergy: 0.1
-  gainEnergy: 10
-  hunger: 0.8
-  maxReproduceProb: 0.5
-  reproduceEnergyCost: 20
-  reproduceTime: 10
-  matureTime: 10
-  maxVision: 20
-  stepAngle: 10
-  nEyes: 5
-  maxSize: 5
-  eatingRange: 0.4
---- !u!114 &3404752603996515028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3404752603996515038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a8f0380408dc84618e936774dfc8934, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  max_speed: 0.5
 --- !u!1 &3404752604018333413
 GameObject:
   m_ObjectHideFlags: 0

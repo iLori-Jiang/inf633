@@ -52,6 +52,7 @@ public class Animal : MonoBehaviour
 
     private bool if_init = false;
     private bool if_debug = false;
+    private bool if_real_motion = false;
 
     // private int[] networkStruct;
     // private SimpleNeuralNet brain = null;
@@ -75,7 +76,7 @@ public class Animal : MonoBehaviour
     private Material mat = null;
 
     //// motion controller
-    //private CapsuleAutoController capsule_controller;
+    private CapsuleAutoController capsule_controller;
     //private HumanoidAutoController human_controller;
     private QuadrupedProceduralMotion quad_controller;
 
@@ -203,13 +204,18 @@ public class Animal : MonoBehaviour
 
         if (if_animal)
         {
-            // quad_controller.goal.position = targetPosition;
+            if (if_real_motion)
+                quad_controller.goal.position = targetPosition;
+            else
+                tfm.LookAt(targetPosition);
         }
         else
         {
-            tfm.LookAt(targetPosition);
+            if (if_real_motion)
+                tfm.LookAt(targetPosition);
+            else
+                tfm.LookAt(targetPosition);
         }
-        
     }
 
     // Look for enemy
@@ -540,8 +546,8 @@ public class Animal : MonoBehaviour
     {
         speed = input;
 
-        if (if_animal)
-            quad_controller.moveSpeed = speed; quad_controller.turnSpeed = speed;
+        // if (if_animal)
+            // quad_controller.moveSpeed = speed; quad_controller.turnSpeed = speed;
         //else
         //    capsule_controller.max_speed = speed;
         // Debug.Log("speed: " + input + " | " + speed);
@@ -586,6 +592,11 @@ public class Animal : MonoBehaviour
     public void SetDebug(bool input)
     {
         if_debug = input;
+    }
+
+    public void SetMotion(bool input)
+    {
+        if_real_motion = input;
     }
 
     private bool IfHungry()
@@ -731,18 +742,36 @@ public class Animal : MonoBehaviour
         // speed
         if (if_animal)
         {
-            quad_controller = new QuadrupedProceduralMotion();
-            quad_controller.moveSpeed = speed;
-            // quad_controller.turnSpeed = 150f;
+            if (if_real_motion)
+            {
+                quad_controller = GetComponent<QuadrupedProceduralMotion>();
+                quad_controller.moveSpeed = speed;
+                // quad_controller.turnSpeed = 150f;
+            }
+            else
+            {
+                capsule_controller = GetComponent<CapsuleAutoController>();
+                if (capsule_controller != null)
+                    capsule_controller.max_speed = speed;
+            }
+
         }
         else
         {
-            //HumanoidAutoController human_controller = GetComponent<HumanoidAutoController>();
-            //human_controller.max_speed = speed;
-            CapsuleAutoController capsule_controller = GetComponent<CapsuleAutoController>();
-            if (capsule_controller != null)
-                capsule_controller.max_speed = speed;
+            if (if_real_motion)
+            {
+                //HumanoidAutoController human_controller = GetComponent<HumanoidAutoController>();
+                //human_controller.max_speed = speed;
+                capsule_controller = GetComponent<CapsuleAutoController>();
+                if (capsule_controller != null)
+                    capsule_controller.max_speed = speed;
+            }
+            else
+            {
+                capsule_controller = GetComponent<CapsuleAutoController>();
+                if (capsule_controller != null)
+                    capsule_controller.max_speed = speed;
+            }
         }
-        
     }
 }

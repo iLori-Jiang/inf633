@@ -5,7 +5,6 @@ using UnityEngine;
 public class QuadrupedProceduralMotion : MonoBehaviour
 {
     [Header("Goal")]
-    private GameObject goalObject;
     public Transform goal; // The character will move towards this goal.
 
     // Settings relative to the root motion.
@@ -64,18 +63,8 @@ public class QuadrupedProceduralMotion : MonoBehaviour
         TailInitialize();
         BodyInitialize();
 
-        //
-        goalObject = new GameObject();
-
-        // This gets the Transform component of the new GameObject
-        //goal = goalObject.transform;
-
-        //// Now you can set the position, rotation, and scale of the newTransform as needed
-        //goal.position = new Vector3(0, 0, 0);
-        //goal.rotation = Quaternion.identity;
-        //goal.localScale = new Vector3(1, 1, 1);
-
-        // goal = transform;
+        if (goal == null)
+            goal = transform;
     }
 
     // Update is called every frame, if the MonoBehaviour is enabled.

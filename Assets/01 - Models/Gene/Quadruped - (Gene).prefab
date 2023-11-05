@@ -5224,7 +5224,7 @@ ParentConstraint:
   m_TranslationAtRest: {x: 0.75, y: 0.3123458, z: 0.70899963}
   m_RotationAtRest: {x: 0, y: 40.00001, z: 0}
   m_TranslationOffsets:
-  - {x: 0.75, y: -0.645556, z: 0.054775238}
+  - {x: 0.75, y: -0.645556, z: 0.05476761}
   m_RotationOffsets:
   - {x: 4.619031, y: 40.156853, z: 3.8872263}
   m_AffectTranslationX: 1
@@ -5658,7 +5658,7 @@ ParentConstraint:
   m_TranslationAtRest: {x: -0.9299927, y: 0.32199955, z: -1.0000038}
   m_RotationAtRest: {x: 0, y: -59.99992, z: 0}
   m_TranslationOffsets:
-  - {x: -0.9299927, y: -0.45629692, z: -1.6437454}
+  - {x: -0.9299927, y: -0.45629787, z: -1.643753}
   m_RotationOffsets:
   - {x: 3.0129864, y: -60.13759, z: -5.2307153}
   m_AffectTranslationX: 1
@@ -5947,7 +5947,7 @@ ParentConstraint:
   m_TranslationAtRest: {x: 0.93, y: 0.32199997, z: -1}
   m_RotationAtRest: {x: 0, y: 59.999973, z: 0}
   m_TranslationOffsets:
-  - {x: 0.9299927, y: -0.4562974, z: -1.6437416}
+  - {x: 0.9299927, y: -0.45629764, z: -1.6437492}
   m_RotationOffsets:
   - {x: 3.0129817, y: 60.137646, z: 5.2307177}
   m_AffectTranslationX: 1
@@ -6091,7 +6091,7 @@ ParentConstraint:
   m_TranslationAtRest: {x: -0.75, y: 0.3123458, z: 0.70899963}
   m_RotationAtRest: {x: 0, y: -40.00001, z: 0}
   m_TranslationOffsets:
-  - {x: -0.75, y: -0.645556, z: 0.054775238}
+  - {x: -0.75, y: -0.645556, z: 0.05476761}
   m_RotationOffsets:
   - {x: 4.619031, y: -40.156853, z: -3.8872263}
   m_AffectTranslationX: 1
@@ -7232,7 +7232,7 @@ GameObject:
   - component: {fileID: 8107060311549103610}
   - component: {fileID: 8107060311548940699}
   m_Layer: 0
-  m_Name: Quadruped - (Procedural)
+  m_Name: Quadruped - (Gene)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7262,7 +7262,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8107060311548940698}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54acf97cd5559e0419ee41af3ebd32a1, type: 3}
   m_Name: 

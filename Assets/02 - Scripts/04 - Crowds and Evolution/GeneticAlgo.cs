@@ -25,11 +25,12 @@ public class GeneticAlgo : MonoBehaviour
     protected float width;
     protected float height;
 
+    private bool if_real_motion = false;
     private bool if_debug = false;
 
     // Record
     private int frame = 0;
-    private int recordFreq = 6;
+    private int recordFreq = 10;
     private List<int> animalNum;
     private List<int> predatorNum;
     private List<float> energyAnimal;
@@ -43,7 +44,8 @@ public class GeneticAlgo : MonoBehaviour
 
     void Start()
     {
-        if_debug = true;
+        if_debug = false;
+        if_real_motion = false;
 
         // limit the FPS
         Time.captureFramerate = 10;
@@ -55,8 +57,8 @@ public class GeneticAlgo : MonoBehaviour
 
         if (if_debug)
         {
-            animal_popSize = 0;
-            predator_popSize = 0;
+            animal_popSize = 2;
+            predator_popSize = 2;
         }
 
         // Init record
@@ -148,10 +150,18 @@ public class GeneticAlgo : MonoBehaviour
     public GameObject makeAnimal(Vector3 position, Animal parent)
     {
         GameObject animal = Instantiate(animalPrefab, transform);
+        if (if_real_motion)
+            animal.AddComponent<QuadrupedProceduralMotion>();
+        else
+            animal.AddComponent<CapsuleAutoController>();
+
+        animal.AddComponent<Animal>();
         var ani = animal.GetComponent<Animal>();
         ani.SetAnimalType(true);
+        ani.SetMotion(if_real_motion);
         ani.Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
         ani.Setup(customTerrain, this);
+
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
         // animal.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
@@ -170,9 +180,17 @@ public class GeneticAlgo : MonoBehaviour
     public GameObject makeAnimal(Vector3 position)
     {
         GameObject animal = Instantiate(animalPrefab, transform);
+        if (if_real_motion)
+            animal.AddComponent<QuadrupedProceduralMotion>();
+        else
+            animal.AddComponent<CapsuleAutoController>();
+
+        animal.AddComponent<Animal>();
         var ani = animal.GetComponent<Animal>();
         ani.SetAnimalType(true);
+        ani.SetMotion(if_real_motion);
         ani.Setup(customTerrain, this);
+
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
 
@@ -198,10 +216,18 @@ public class GeneticAlgo : MonoBehaviour
     public GameObject makePredator(Vector3 position, Animal parent)
     {
         GameObject predator = Instantiate(predatorPrefab, transform);
+        if (if_real_motion)
+            predator.AddComponent<CapsuleAutoController>();
+        else
+            predator.AddComponent<CapsuleAutoController>();
+
+        predator.AddComponent<Animal>();
         var ani = predator.GetComponent<Animal>();
         ani.SetAnimalType(false);
+        ani.SetMotion(if_real_motion);
         ani.Mutate(parent.GetEnergyMAX(), parent.GetVisionRange(), parent.GetSize(), parent.GetSpeed(), parent.GetReproduceProba());
         ani.Setup(customTerrain, this);
+
         predator.transform.position = position;
         predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
         // predator.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
@@ -215,9 +241,17 @@ public class GeneticAlgo : MonoBehaviour
     public GameObject makePredator(Vector3 position)
     {
         GameObject predator = Instantiate(predatorPrefab, transform);
+        if (if_real_motion)
+            predator.AddComponent<CapsuleAutoController>();
+        else
+            predator.AddComponent<CapsuleAutoController>();
+
+        predator.AddComponent<Animal>();
         var ani = predator.GetComponent<Animal>();
         ani.SetAnimalType(false);
+        ani.SetMotion(if_real_motion);
         ani.Setup(customTerrain, this);
+
         predator.transform.position = position;
         predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
 

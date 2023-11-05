@@ -268,6 +268,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Human - (Controller + IK)
       objectReference: {fileID: 0}
+    - target: {fileID: 7756460624979582884, guid: 2ea9df0dc5608ab4f9c12d55c141b621,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7756460624979582886, guid: 2ea9df0dc5608ab4f9c12d55c141b621,
         type: 3}
       propertyPath: m_Enabled
@@ -825,9 +830,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animal_popSize: 100
-  animalPrefab: {fileID: 822039958}
+  animalPrefab: {fileID: 8107060311548940698, guid: 567194bbec72b44dab0b1d12c8f6ad60,
+    type: 3}
   predator_popSize: 20
-  predatorPrefab: {fileID: 2136941669}
+  predatorPrefab: {fileID: 3404752603996515038, guid: ab12f41e18a0c4c59a79e800e1dee58d,
+    type: 3}
   vegetationGrowthRate: 1
   currentGrowth: 0
 --- !u!1 &534669902
@@ -999,7 +1006,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 609556146}
-  m_LocalRotation: {x: 0.07881487, y: 0.48020634, z: -0.04337662, w: 0.87253}
+  m_LocalRotation: {x: 0.07881488, y: 0.48020637, z: -0.043376625, w: 0.87253}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1448,7 +1455,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1090240002}
-  m_LocalRotation: {x: 0.07881489, y: 0.48020634, z: -0.043376632, w: 0.87253}
+  m_LocalRotation: {x: 0.078814894, y: 0.48020637, z: -0.04337664, w: 0.8725299}
   m_LocalPosition: {x: 5.7758684, y: 2.5, z: 7.3247967}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1938,11 +1945,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Quadruped - (Autonomous)
       objectReference: {fileID: 0}
+    - target: {fileID: 8107060311548940698, guid: 292e0cc1c13240549bc0ea73726cca30,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8107060311548940699, guid: 292e0cc1c13240549bc0ea73726cca30,
         type: 3}
       propertyPath: goal
       value: 
       objectReference: {fileID: 1525859055}
+    - target: {fileID: 8107060311548940699, guid: 292e0cc1c13240549bc0ea73726cca30,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107060311548940699, guid: 292e0cc1c13240549bc0ea73726cca30,
+        type: 3}
+      propertyPath: turnSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8107060311549103610, guid: 292e0cc1c13240549bc0ea73726cca30,
         type: 3}
       propertyPath: m_RootOrder
@@ -2488,6 +2510,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Human - (Autonomous)
       objectReference: {fileID: 0}
+    - target: {fileID: 3404752603996515038, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
         type: 3}
       propertyPath: maxSpeed
@@ -2496,6 +2523,11 @@ PrefabInstance:
     - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
         type: 3}
       propertyPath: if_animal
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3404752603996515039, guid: 6e0a91f5d1c3f4d4ca7ef92d4e643784,
@@ -2593,6 +2625,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Animal - (Autonomous)
       objectReference: {fileID: 0}
+    - target: {fileID: 6733265589692463594, guid: b8a4860b06bc8b44fa2e523916edd3dd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8a4860b06bc8b44fa2e523916edd3dd, type: 3}
 --- !u!1001 &8246070314906294668
@@ -2681,6 +2718,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Quadruped - (Procedural)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107060311548940698, guid: 292e0cc1c13240549bc0ea73726cca30,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8107060311548940699, guid: 292e0cc1c13240549bc0ea73726cca30,
         type: 3}
