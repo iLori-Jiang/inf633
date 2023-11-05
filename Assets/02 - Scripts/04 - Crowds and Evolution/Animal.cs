@@ -103,12 +103,14 @@ public class Animal : MonoBehaviour
         hunger = 0.7f;
         eatingRange = 0.4f * maxSpeed;
 
-        reproduceEnergyCost = 20f;
+        reproduceEnergyCost = 15f;
         if (!if_animal)
             reproduceEnergyCost *= 1.3f;
         maxReproduceProb = 0.4;
         reproduceTime = 30;
         matureTime = 70;
+        if (!if_animal)
+            matureTime += (int)(0.4f * matureTime);
 
         reproduceCounter = 0;
         matureCounter = 0;
@@ -736,8 +738,9 @@ public class Animal : MonoBehaviour
         //Debug.Log("     Speed: " + speed + " | " + speed_parent);
 
         // size
-        //if (tfm != null)
-        //    tfm.localScale = new Vector3(size, size, size);
+        if (!if_real_motion)
+            if (tfm != null)
+                tfm.localScale = new Vector3(size, size, size);
 
         // speed
         if (if_animal)

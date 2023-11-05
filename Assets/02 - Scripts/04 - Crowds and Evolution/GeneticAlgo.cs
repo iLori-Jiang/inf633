@@ -164,7 +164,8 @@ public class GeneticAlgo : MonoBehaviour
 
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
-        // animal.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+        if (!if_real_motion)
+            animal.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
 
         if (if_debug)
             ani.SetDebug(true);
@@ -230,7 +231,8 @@ public class GeneticAlgo : MonoBehaviour
 
         predator.transform.position = position;
         predator.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
-        // predator.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
+        if (!if_real_motion)
+            predator.transform.localScale = new Vector3(ani.GetSize(), ani.GetSize(), ani.GetSize());
 
         if (if_debug)
             ani.SetDebug(true);
